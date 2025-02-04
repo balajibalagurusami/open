@@ -28,22 +28,24 @@
         let audioChunks = [];
 
         document.getElementById('start').addEventListener('click', async () => {
-            console.log("Start button clicked. Requesting screen/audio permissions...");
-            
+            console.log("Requesting screen/audio permissions...");
+
             try {
+                // Force entire screen sharing
                 const stream = await navigator.mediaDevices.getDisplayMedia({
-                    video: true, // Necessary to access screen sharing
-                    audio: true  // Capture system audio
+                    video: { cursor: "never" }, // Ensure screen is captured
+                    audio: true // Capture system audio
                 });
 
-                // Extract audio tracks
-                const audioStream = new MediaStream(stream.getAudioTracks());
-                console.log("Audio Tracks Captured:", audioStream.getTracks());
-
-                if (audioStream.getAudioTracks().length === 0) {
-                    alert("No audio track detected. Try selecting 'Entire Screen' when sharing.");
+                // Ensure audio track exists
+                const audioTracks = stream.getAudioTracks();
+                if (audioTracks.length === 0) {
+                    alert("No audio detected! Please select 'Entire Screen' and enable 'Share Audio'.");
                     return;
                 }
+
+                const audioStream = new MediaStream(audioTracks);
+                console.log("Audio Tracks Captured:", audioTracks);
 
                 mediaRecorder = new MediaRecorder(audioStream, { mimeType: 'audio/webm' });
 
@@ -72,7 +74,7 @@
                 document.getElementById('stop').disabled = false;
             } catch (error) {
                 console.error("Error capturing system audio:", error);
-                alert("Error: Unable to capture system audio. Make sure you select 'Entire Screen' when sharing.");
+                alert("Error: Make sure you select 'Entire Screen' and enable 'Share Audio'.");
             }
         });
 
