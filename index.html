@@ -28,13 +28,23 @@
         let audioChunks = [];
 
         document.getElementById('start').addEventListener('click', async () => {
+            console.log("Start button clicked. Requesting screen/audio permissions...");
+            
             try {
                 const stream = await navigator.mediaDevices.getDisplayMedia({
-                    audio: { systemAudio: "include" }, 
-                    video: false
+                    video: true, // Necessary to access screen sharing
+                    audio: true  // Capture system audio
                 });
 
+                // Extract audio tracks
                 const audioStream = new MediaStream(stream.getAudioTracks());
+                console.log("Audio Tracks Captured:", audioStream.getTracks());
+
+                if (audioStream.getAudioTracks().length === 0) {
+                    alert("No audio track detected. Try selecting 'Entire Screen' when sharing.");
+                    return;
+                }
+
                 mediaRecorder = new MediaRecorder(audioStream, { mimeType: 'audio/webm' });
 
                 mediaRecorder.ondataavailable = event => {
@@ -44,6 +54,8 @@
                 };
 
                 mediaRecorder.onstop = async () => {
+                    console.log("Recording stopped. Saving file...");
+
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                     const audioUrl = URL.createObjectURL(audioBlob);
                     const downloadLink = document.getElementById('download');
@@ -54,17 +66,20 @@
                 };
 
                 mediaRecorder.start();
+                console.log("Recording started...");
+                
                 document.getElementById('start').disabled = true;
                 document.getElementById('stop').disabled = false;
             } catch (error) {
-                console.error("Error accessing system audio:", error);
-                alert("System audio capture may not be supported or permission was denied.");
+                console.error("Error capturing system audio:", error);
+                alert("Error: Unable to capture system audio. Make sure you select 'Entire Screen' when sharing.");
             }
         });
 
         document.getElementById('stop').addEventListener('click', () => {
             if (mediaRecorder && mediaRecorder.state !== "inactive") {
                 mediaRecorder.stop();
+                console.log("Recording stopped.");
                 document.getElementById('start').disabled = false;
                 document.getElementById('stop').disabled = true;
             }
