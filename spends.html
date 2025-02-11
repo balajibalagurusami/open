@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Styled Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        input, select {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <form action="https://docs.google.com/forms/d/e/1FAIpQLSeJOx3RMY6ld803sx_heXK2mAeFisD-ep_1C6iB1-T5vrcyeg/formResponse" method="post">
+        <input type="date" name="entry.281088503" placeholder="MM/DD/YYYY"><br>
+        <input type="text" name="entry.1389758782" placeholder="Amount"><br>
+        <input type="text" name="entry.2009338618" placeholder="Description"><br>
+        
+        <select name="entry.883878710">
+            <option value="" disabled selected>Select Category</option>
+            <option value="Household">Household</option>
+            <option value="💸 Loan EMI">💸 Loan EMI</option>
+            <option value="💲 Investments">💲 Investments</option>
+            <option value="💳 Credit Card">💳 Credit Card</option>
+            <option value="Others">Others</option>
+            <option value="👪 Family">👪 Family</option>
+            <option value="🍔 Food">🍔 Food</option>
+            <option value="🌾 Groceries">🌾 Groceries</option>
+            <option value="🍴 Eating Out">🍴 Eating Out</option>
+            <option value="🍆 Vegetables">🍆 Vegetables</option>
+            <option value="⛽ Transportation - Fuel">⛽ Transportation - Fuel</option>
+            <option value="🍩 Snacks">🍩 Snacks</option>
+            <option value="💊 Pharmacy Medicine / Vaccine 💉">💊 Pharmacy Medicine / Vaccine 💉</option>
+            <option value="⚙ Utilities">⚙ Utilities</option>
+            <option value="🍌 Fruits">🍌 Fruits</option>
+            <option value="🚌 Travel">🚌 Travel</option>
+            <option value="🍽️ Takeaway Food">🍽️ Takeaway Food</option>
+        </select><br>
+        
+        <select name="entry.477715970">
+            <option value="" disabled selected>Select Account Type</option>
+            <option value="Savings Account">Savings Account</option>
+            <option value="Credit Card / EMI Card">Credit Card / EMI Card</option>
+            <option value="PayLater (LazyPay / Amazon Pay Later)">PayLater (LazyPay / Amazon Pay Later)</option>
+            <option value="Others">Others</option>
+        </select><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
