@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Text Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        #text-box {
+            width: 50%;
+            min-height: 50px;
+            padding: 10px;
+            border: 2px solid #ccc;
+            background: white;
+            font-size: 24px;
+            word-wrap: break-word;
+            margin-bottom: 10px;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="text-box" contenteditable="true"></div>
+    <div class="button-container">
+        <button onclick="shareText()">Share</button>
+        <button onclick="shareWhatsApp()">Share on WhatsApp</button>
+    </div>
+
+    <script>
+        const charMap = {
+            "A": "🍎", "B": "⚽", "C": "😺", "D": "🐶", "E": "🐘", "F": "🦊", "G": "🦒", "H": "🐴", "I": "🍦", "J": "🏇🏼",
+            "K": "🪁", "L": "💖", "M": "🐵", "N": "🌑", "O": "🍊", "P": "🥔", "Q": "👯", "R": "🐰", "S": "⭐", "T": "🐢",
+            "U": "☂️", "V": "🎻", "W": "🕯️", "X": "🎅🏼", "Y": "🥱", "Z": "🦓", "a": "✈️", "b": "🏀", "c": "🚗", "d": "🫏",
+            "e": "🐃", "f": "🪭", "g": "🌍", "h": "🐎", "i": "🍧", "j": "🃏", "k": "😘", "l": "💌", "m": "🌕", "n": "🥷🏼",
+            "o": "🧅", "p": "🐷", "q": "👑", "r": "🐀", "s": "🙂", "t": "🐯", "u": "🌂", "v": "🧛🏼", "w": "🏋🏼", "x": "🎄",
+            "y": "💹", "z": "🧟", "0": "🍿", "1": "🍩", "2": "🍪", "3": "🎂", "4": "🍫", "5": "🍬", "6": "🍭", "7": "☕",
+            "8": "🍵", "9": "🍺", "!": "🍷", "@": "📧", "#": "#️⃣", "$": "💲", "%": "🔢", "^": "🎮", "&": "🩲", "*": "🎲",
+            "(": "🎳", ")": "🎁", "-": "🎉", "=": "🎈", "_": "🪅", "+": "🎏", "[": "🎇", "]": "🎆", "{": "🎐", "}": "📱",
+            "|": "💻", "\\": "🖥️", ";": "⌨️", ":": "🖱️", "\"": "💡", "<": "🔦", ">": "🔌", ",": "🔋", ".": "🛢️",
+            "?": "💾", "`": "📷", "~": "📸", " ": "     "
+        };
+
+        document.getElementById("text-box").addEventListener("input", function () {
+            let inputText = this.innerText;
+            let emojiText = inputText.split('').map(char => charMap[char] || char).join('');
+            this.innerText = emojiText;
+            
+            let range = document.createRange();
+            let sel = window.getSelection();
+            range.selectNodeContents(this);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        });
+
+        function shareText() {
+            let text = document.getElementById("text-box").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Text copied to clipboard! You can paste it in any chat app.");
+            });
+        }
+
+        function shareWhatsApp() {
+            let text = document.getElementById("text-box").innerText;
+            let url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, "_blank");
+        }
+    </script>
+</body>
+</html>
