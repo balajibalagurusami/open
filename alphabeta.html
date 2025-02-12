@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greek Letter Text Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            background-color: #f4f4f4;
+            padding-top: 20px;
+        }
+        #text-box {
+            width: 50%;
+            min-height: 100px;
+            max-height: 300px;
+            padding: 10px;
+            border: 2px solid #ccc;
+            background: white;
+            font-size: 24px;
+            word-wrap: break-word;
+            overflow-y: auto;
+            overflow-x: hidden;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="text-box" contenteditable="true"></div>
+    <div class="button-container">
+        <button onclick="shareText()">Share</button>
+        <button onclick="shareWhatsApp()">Share on WhatsApp</button>
+    </div>
+
+    <script>
+        const charMap = {
+            "A": "α", "B": "β", "C": "γ", "D": "δ", "E": "ε", "F": "φ", "G": "γ", "H": "η", "I": "ι", "J": "ξ",
+            "K": "κ", "L": "λ", "M": "μ", "N": "ν", "O": "ο", "P": "π", "Q": "θ", "R": "ρ", "S": "σ", "T": "τ",
+            "U": "υ", "V": "ν", "W": "ω", "X": "χ", "Y": "ψ", "Z": "ζ"
+        };
+
+        document.getElementById("text-box").addEventListener("input", function () {
+            let inputText = this.innerText;
+            let greekText = inputText.split('').map(char => {
+                let upperChar = char.toUpperCase();
+                return charMap[upperChar] || char;
+            }).join('');
+            this.innerText = greekText;
+            
+            let range = document.createRange();
+            let sel = window.getSelection();
+            range.selectNodeContents(this);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        });
+
+        function shareText() {
+            let text = document.getElementById("text-box").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Text copied to clipboard! You can paste it in any chat app.");
+            });
+        }
+
+        function shareWhatsApp() {
+            let text = document.getElementById("text-box").innerText;
+            let url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, "_blank");
+        }
+    </script>
+</body>
+</html>
