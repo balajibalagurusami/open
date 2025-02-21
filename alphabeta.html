@@ -45,6 +45,7 @@
     <div class="button-container">
         <button onclick="shareText()">Share</button>
         <button onclick="shareWhatsApp()">Share on WhatsApp</button>
+        <button onclick="switchToEnglish()">Switch to English</button>
     </div>
 
     <script>
@@ -53,6 +54,8 @@
             "K": "κ", "L": "λ", "M": "μ", "N": "ν", "O": "ο", "P": "π", "Q": "θ", "R": "ρ", "S": "σ", "T": "τ",
             "U": "υ", "V": "ν", "W": "ω", "X": "χ", "Y": "ψ", "Z": "ζ"
         };
+        
+        const reverseCharMap = Object.fromEntries(Object.entries(charMap).map(([k, v]) => [v, k]));
 
         document.getElementById("text-box").addEventListener("input", function () {
             let inputText = this.innerText;
@@ -69,6 +72,13 @@
             sel.removeAllRanges();
             sel.addRange(range);
         });
+
+        function switchToEnglish() {
+            let textBox = document.getElementById("text-box");
+            let text = textBox.innerText;
+            let englishText = text.split('').map(char => reverseCharMap[char] || char).join('');
+            textBox.innerText = englishText;
+        }
 
         function shareText() {
             let text = document.getElementById("text-box").innerText;
