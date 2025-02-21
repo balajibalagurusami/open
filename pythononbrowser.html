@@ -12,14 +12,23 @@
     <pre id="output"></pre>
 
     <script>
+        let pyodideReady = false;
+
         async function loadPyodideAndRun() {
             window.pyodide = await loadPyodide();
+            pyodideReady = true;
         }
         loadPyodideAndRun();
 
         async function runPython() {
-            let code = document.getElementById("python-code").value;
             let outputElement = document.getElementById("output");
+            
+            if (!pyodideReady) {
+                outputElement.textContent = "Pyodide is still loading, please wait...";
+                return;
+            }
+
+            let code = document.getElementById("python-code").value;
             try {
                 let result = await pyodide.runPythonAsync(code);
                 outputElement.textContent = result;
