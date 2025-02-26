@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #qr-container {
+            margin-top: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Generator</h1>
+    <input type="text" id="qr-input" placeholder="Enter text or URL">
+    <button onclick="generateQRCode()">Generate QR Code</button>
+    <input type="file" id="file-input" accept=".txt">
+    <button onclick="processFile()">Upload and Generate QR Codes</button>
+    <div id="qr-container"></div>
+    <button onclick="downloadSVG()">Download as SVG</button>
+    <button onclick="downloadPNG()">Download as PNG</button>
+    
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling/lib/qr-code-styling.min.js"></script>
+    <script>
+        let qrCode;
+
+        function generateQRCode() {
+            const input = document.getElementById("qr-input").value;
+            if (!input) {
+                alert("Please enter text or a URL.");
+                return;
+            }
+            
+            if (qrCode) {
+                document.getElementById("qr-container").innerHTML = "";
+            }
+            
+            qrCode = new QRCodeStyling({
+                width: 300,
+                height: 300,
+                data: input,
+                dotsOptions: {
+                    color: "#000",
+                    type: "rounded"
+                },
+                backgroundOptions: {
+                    color: "#fff"
+                }
+            });
+            
+            qrCode.append(document.getElementById("qr-container"));
+        }
+
+        function downloadSVG() {
+            if (!qrCode) {
+                alert("Please generate a QR code first.");
+                return;
+            }
+            qrCode.download({ name: "qrcode", extension: "svg" });
+        }
+
+        function downloadPNG() {
+            if (!qrCode) {
+                alert("Please generate a QR code first.");
+                return;
+            }
+            qrCode.download({ name: "qrcode", extension: "png" });
+        }
+
+        async function processFile() {
+            const fileInput = document.getElementById("file-input");
+            if (!fileInput.files.length) {
+                alert("Please upload a text file.");
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const text = await file.text();
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+            
+            if (lines.length === 0) {
+                alert("The file is empty.");
+                return;
+            }
+            
+            const zip = new JSZip();
+            
+            for (let i = 0; i < lines.length; i++) {
+                const qr = new QRCodeStyling({
+                    width: 300,
+                    height: 300,
+                    data: lines[i],
+                    dotsOptions: {
+                        color: "#000",
+                        type: "rounded"
+                    },
+                    backgroundOptions: {
+                        color: "#fff"
+                    }
+                });
+                
+                const blob = await qr.getRawData("svg");
+                zip.file(`qrcode_${i + 1}.svg`, blob);
+            }
+            
+            zip.generateAsync({ type: "blob" }).then(content => {
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(content);
+                a.download = "qrcodes.zip";
+                a.click();
+            });
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</body>
+</html>
