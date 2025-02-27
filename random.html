@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Redirect</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Click the button to be redirected</h1>
+        <button onclick="redirectToRandomSite()">Go</button>
+    </div>
+
+    <script>
+        function redirectToRandomSite() {
+            const websites = [
+                "https://bing.com",
+                "https://google.com",
+                "https://youtube.com",
+                "https://wikipedia.org"
+            ];
+            
+            const randomIndex = Math.floor(Math.random() * websites.length);
+            window.location.href = websites[randomIndex];
+        }
+    </script>
+</body>
+</html>
