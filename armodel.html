@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scanner & AR Viewer</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        video { width: 100%; max-width: 400px; }
+        canvas { display: none; }
+        model-viewer { width: 100%; height: 500px; }
+    </style>
+</head>
+<body>
+    <h1>Scan QR Code to Load 3D Model</h1>
+    <video id="video" autoplay></video>
+    <canvas id="canvas"></canvas>
+    <p id="output">Loading predefined 3D model...</p>
+    <model-viewer id="modelViewer" ar ar-modes="scene-viewer quick-look" camera-controls 
+        src=""C:\Users\nknk\Downloads\Avocado.glb""></model-viewer>
+    
+    <script>
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const output = document.getElementById("output");
+        const modelViewer = document.getElementById("modelViewer");
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => { console.error("Camera error:", err); });
+        
+        function scanQRCode() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            
+            if (code) {
+                output.textContent = "Model URL: " + code.data;
+                modelViewer.src = "https://example.com/path/to/your-model.glb"; // Absolute path set here
+            }
+            requestAnimationFrame(scanQRCode);
+        }
+        video.addEventListener("play", () => requestAnimationFrame(scanQRCode));
+    </script>
+</body>
+</html>
