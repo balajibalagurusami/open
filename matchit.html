@@ -140,6 +140,7 @@
             const draggedId = event.dataTransfer.getData("text");
             const draggedElement = document.getElementById(draggedId);
             event.target.innerHTML = draggedElement.innerText;
+            event.target.setAttribute('data-term', draggedElement.innerText);
             event.target.classList.add('matched');
             draggedElement.remove();
         }
@@ -149,8 +150,10 @@
             const defDivs = document.querySelectorAll('.definition');
 
             defDivs.forEach(def => {
-                const termText = def.innerText;
-                if (Object.keys(correctAnswers).includes(termText) && correctAnswers[termText] === def.getAttribute('data-definition')) {
+                const termText = def.getAttribute('data-term');
+                const definitionText = def.innerText;
+
+                if (termText && correctAnswers[termText] === definitionText) {
                     correct++;
                     def.classList.add('matched');
                 }
