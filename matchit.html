@@ -8,11 +8,9 @@
             background-color: #f4f4f4;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
-            overflow-y: auto;
         }
         .container {
             display: flex;
@@ -32,14 +30,6 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             cursor: grab;
-        }
-        .matched {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-        }
-        .droppable {
-            border: 2px dashed #ccc;
-            background-color: #f9f9f9;
         }
         #result {
             margin-top: 20px;
@@ -112,55 +102,56 @@
                 termDiv.draggable = true;
                 termDiv.innerText = term;
                 termDiv.id = `term-${index}`;
-                termDiv.setAttribute('ondragstart', 'drag(event)');
+                termDiv.dataset.term = term;
+                termDiv.addEventListener('dragstart', dragStart);
                 termList.appendChild(termDiv);
             });
 
             definitions.forEach((definition, index) => {
                 const defDiv = document.createElement('div');
-                defDiv.className = 'definition droppable';
+                defDiv.className = 'definition';
+                defDiv.draggable = true;
                 defDiv.innerText = definition;
                 defDiv.id = `def-${index}`;
-                defDiv.setAttribute('ondrop', 'drop(event)');
-                defDiv.setAttribute('ondragover', 'allowDrop(event)');
-                definitionList.appendChild(defDiv);
-            });
-        }
-
-        function allowDrop(event) {
-            event.preventDefault();
-        }
-
-        function drag(event) {
-            event.dataTransfer.setData("text", event.target.id);
-        }
-
-        function drop(event) {
-            event.preventDefault();
-            const draggedId = event.dataTransfer.getData("text");
-            const draggedElement = document.getElementById(draggedId);
-            event.target.innerHTML = draggedElement.innerText;
-            event.target.setAttribute('data-term', draggedElement.innerText);
-            event.target.classList.add('matched');
-            draggedElement.remove();
-        }
-
+                defDiv.dataset.definition = definition;
+                defDiv.addEventListener('dragover', dragOver);
         function checkMatch() {
             let correct = 0;
             const defDivs = document.querySelectorAll('.definition');
 
             defDivs.forEach(def => {
-                const termText = def.getAttribute('data-term');
-                const definitionText = def.innerText;
-
-                if (termText && correctAnswers[termText] === definitionText) {
+                const matchedTerm = def.dataset.matchedTerm;
+                if (matchedTerm && correctAnswers[matchedTerm] === def.dataset.definition) {
                     correct++;
-                    def.classList.add('matched');
                 }
             });
 
             const resultDiv = document.getElementById('result');
-            resultDiv.innerText = `${correct} out of ${Object.keys(correctAnswers).length} correct!`;
+            resultDiv.innerText = `${correct} out of ${terms.length} correct!`;
+        }
+            event.preventDefault();
+            if (draggedTerm) {
+                event.target.innerText = draggedTerm.innerText;
+                event.target.dataset.matchedTerm = draggedTerm.dataset.term;
+                draggedTerm = null;
+            }
+        }
+
+        function checkMatch() {
+            let correct = 0;
+            const termDivs = document.querySelectorAll('.term');
+            const defDivs = document.querySelectorAll('.definition');
+
+            termDivs.forEach(term => {
+                defDivs.forEach(def => {
+                    if (term.innerText === Object.keys(correctAnswers).find(key => correctAnswers[key] === def.innerText)) {
+                        correct++;
+                    }
+                });
+            });
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerText = `${correct} out of ${terms.length} correct!`;
         }
 
         function resetGame() {
