@@ -31,6 +31,10 @@
             border-radius: 5px;
             cursor: grab;
         }
+        .droppable {
+            border: 2px dashed #ccc;
+            background-color: #f9f9f9;
+        }
         #result {
             margin-top: 20px;
             font-size: 18px;
@@ -102,30 +106,46 @@
                 termDiv.draggable = true;
                 termDiv.innerText = term;
                 termDiv.id = `term-${index}`;
+                termDiv.setAttribute('ondragstart', 'drag(event)');
                 termList.appendChild(termDiv);
             });
 
             definitions.forEach((definition, index) => {
                 const defDiv = document.createElement('div');
-                defDiv.className = 'definition';
-                defDiv.draggable = true;
+                defDiv.className = 'definition droppable';
                 defDiv.innerText = definition;
                 defDiv.id = `def-${index}`;
+                defDiv.setAttribute('ondrop', 'drop(event)');
+                defDiv.setAttribute('ondragover', 'allowDrop(event)');
                 definitionList.appendChild(defDiv);
             });
         }
 
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const draggedId = event.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(draggedId);
+            event.target.innerHTML = draggedElement.innerText;
+            draggedElement.remove();
+        }
+
         function checkMatch() {
             let correct = 0;
-            const termDivs = document.querySelectorAll('.term');
             const defDivs = document.querySelectorAll('.definition');
 
-            termDivs.forEach(term => {
-                defDivs.forEach(def => {
-                    if (term.innerText === Object.keys(correctAnswers).find(key => correctAnswers[key] === def.innerText)) {
-                        correct++;
-                    }
-                });
+            defDivs.forEach(def => {
+                const termText = def.innerText;
+                if (Object.keys(correctAnswers).includes(termText) && correctAnswers[termText] === def.getAttribute('data-definition')) {
+                    correct++;
+                }
             });
 
             const resultDiv = document.getElementById('result');
