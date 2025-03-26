@@ -160,7 +160,7 @@
             });
 
             const resultDiv = document.getElementById('result');
-            resultDiv.innerText = `${correct} out of ${terms.length} correct!`;
+            resultDiv.innerText = `${correct} out of ${Object.keys(correctAnswers).length} correct!`;
         }
 
         function resetGame() {
