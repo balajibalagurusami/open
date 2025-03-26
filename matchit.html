@@ -115,6 +115,10 @@
                 defDiv.id = `def-${index}`;
                 defDiv.dataset.definition = definition;
                 defDiv.addEventListener('dragover', dragOver);
+            });
+
+            definitionList.appendChild(defDiv);
+        }
         function checkMatch() {
             let correct = 0;
             const defDivs = document.querySelectorAll('.definition');
@@ -128,13 +132,12 @@
 
             const resultDiv = document.getElementById('result');
             resultDiv.innerText = `${correct} out of ${terms.length} correct!`;
+        event.preventDefault();
+        if (draggedTerm) {
+            event.target.innerText = draggedTerm.innerText;
+            event.target.dataset.matchedTerm = draggedTerm.dataset.term;
+            draggedTerm = null;
         }
-            event.preventDefault();
-            if (draggedTerm) {
-                event.target.innerText = draggedTerm.innerText;
-                event.target.dataset.matchedTerm = draggedTerm.dataset.term;
-                draggedTerm = null;
-            }
         }
 
         function checkMatch() {
