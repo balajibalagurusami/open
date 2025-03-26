@@ -8,9 +8,11 @@
             background-color: #f4f4f4;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            overflow-y: auto;
         }
         .container {
             display: flex;
@@ -30,6 +32,10 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             cursor: grab;
+        }
+        .matched {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
         }
         .droppable {
             border: 2px dashed #ccc;
@@ -134,6 +140,7 @@
             const draggedId = event.dataTransfer.getData("text");
             const draggedElement = document.getElementById(draggedId);
             event.target.innerHTML = draggedElement.innerText;
+            event.target.classList.add('matched');
             draggedElement.remove();
         }
 
@@ -145,6 +152,7 @@
                 const termText = def.innerText;
                 if (Object.keys(correctAnswers).includes(termText) && correctAnswers[termText] === def.getAttribute('data-definition')) {
                     correct++;
+                    def.classList.add('matched');
                 }
             });
 
