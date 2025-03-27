@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20 Amazing PyRevit Tools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #search {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .accordion {
+            background-color: #f1f1f1;
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            transition: 0.3s;
+            border-bottom: 1px solid #ddd;
+        }
+        .accordion:hover {
+            background-color: #ddd;
+        }
+        .accordion.active {
+            background-color: #ccc;
+        }
+        .panel {
+            padding: 0 15px;
+            background-color: white;
+            display: none;
+            overflow: hidden;
+        }
+        .content {
+            padding: 10px 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container"></div>
+    <div class="container">
+        <h1>🎯 20 Amazing PyRevit Tools to Save Insane Amounts of Time in Revit</h1>
+        <input type="text" id="search" placeholder="Search for a tool..." onkeyup="searchTools()">
+        <div id="tools">
+            <!-- Collapsible Tool Sections -->
+        </div>
+    </div>
+
+    <script>
+        const items = [
+            {
+                title: "✅ 1. Pattern Maker",
+                content: `📚 Overview:<br>The Pattern Maker tool allows you to create custom fill patterns directly within Revit without the need for external software or complex workflows.<br><br>
+                🛠️ Use Cases:<br>Creating detailed hatch patterns for concrete, brick, or steel elements.<br>Designing custom patterns for presentation and documentation.<br>Saving time by eliminating the need for manual PAT file generation.<br><br>
+                ⚡ Benefits:<br>No need to manually modify PAT files.<br>Quick generation and immediate application of patterns.<br>Ensures consistency in drawings.<br><br>
+                📝 Best Practice:<br>Use Pattern Maker to standardize fill patterns across different projects and avoid inconsistencies.`
+            },
+            {
+                title: "🎨 2. Tab Colouring",
+                content: `📚 Overview:<br>Tab Colouring assigns custom colors to different tabs in Revit, making it easier to navigate through multiple views, sheets, and documents.<br><br>
+                🛠️ Use Cases:<br>Differentiating between model views, sheets, and schedules.<br>Enhancing project organization when working on large models.<br>Quickly identifying views that require attention.<br><br>
+                ⚡ Benefits:<br>Faster navigation between tabs.<br>Improved visual identification of workspaces.<br>Reduces errors by avoiding confusion between views.<br><br>
+                📝 Best Practice:<br>Apply unique colors to different types of views (e.g., blue for 3D views, green for plans) to maintain visual clarity.`
+            },
+            {
+                title: "🛑 3. Preflight Checks",
+                content: `📚 Overview:<br>Preflight Checks run quality control (QC) tests on models before publishing or issuing deliverables. It verifies that project settings, naming conventions, and parameters are correct.<br><br>
+                🛠️ Use Cases:<br>Verifying model compliance with BIM standards.<br>Identifying missing or incorrect information.<br>Running checks before sharing or archiving a model.<br><br>
+                ⚡ Benefits:<br>Reduces errors and inconsistencies.<br>Ensures adherence to company or client standards.<br>Saves time in post-issuance corrections.<br><br>
+                📝 Best Practice:<br>Run Preflight Checks before every model submission or milestone to catch issues early.`
+            },
+            {
+                title: "🎨 4. Colour Splasher",
+                content: `📚 Overview:<br>Colour Splasher assigns color overrides to model elements based on specified criteria, allowing for quick visualization of element categories, phases, or parameters.<br><br>
+                🛠️ Use Cases:<br>Highlighting elements based on status (e.g., completed, pending).<br>Identifying incorrectly categorized elements.<br>Visualizing phases, revisions, or worksets.<br><br>
+                ⚡ Benefits:<br>Immediate visual feedback.<br>Improves QA/QC processes.<br>Identifies inconsistencies efficiently.<br><br>
+                📝 Best Practice:<br>Use Colour Splasher during review meetings to highlight changes or problem areas.`
+            },
+            {
+                title: "📚 5. Batch Sheet Maker",
+                content: `📚 Overview:<br>Batch Sheet Maker automates the creation of multiple sheets with predefined title blocks and views, eliminating the need for manual setup.<br><br>
+                🛠️ Use Cases:<br>Creating drawing sets for multiple disciplines.<br>Automating sheet creation for large projects.<br>Standardizing sheet naming conventions.<br><br>
+                ⚡ Benefits:<br>Saves hours of manual work.<br>Ensures consistent sheet setups.<br>Reduces errors in sheet naming and title block assignment.<br><br>
+                📝 Best Practice:<br>Set up templates for different sheet types to ensure consistency across projects.`
+            },
+            {
+                title: "📐 6. Match",
+                content: `📚 Overview:<br>The Match tool copies view templates, properties, and element settings between views, ensuring consistency across models.<br><br>
+                🛠️ Use Cases:<br>Synchronizing view settings in large models.<br>Copying visual settings from one view to another.<br>Ensuring consistent display settings across similar views.<br><br>
+                ⚡ Benefits:<br>Reduces manual adjustments.<br>Improves visual consistency.<br>Saves time in large models with multiple views.<br><br>
+                📝 Best Practice:<br>Use Match frequently to maintain consistency in section and elevation views.`
+            },
+            {
+                title: "📄 7. Copy Legends to Other Documents",
+                content: `📚 Overview:<br>This tool copies legends and schedules between different Revit documents, avoiding the need to recreate them manually.<br><br>
+                🛠️ Use Cases:<br>Reusing standard legends across multiple projects.<br>Ensuring consistent documentation across disciplines.<br>Simplifying project setup by replicating standard legends.<br><br>
+                ⚡ Benefits:<br>Saves time by avoiding repetitive legend creation.<br>Ensures consistency across project deliverables.<br><br>
+                📝 Best Practice:<br>Use this tool when setting up similar projects to maintain documentation standards.`
+            },
+            {
+                title: "🔄 8. Sync Views",
+                content: `📚 Overview:<br>Sync Views allows you to synchronize zoom levels and navigation settings across multiple views.<br><br>
+                🛠️ Use Cases:<br>Comparing changes between different views.<br>Keeping multiple views aligned for coordination.<br>Speeding up review processes.<br><br>
+                ⚡ Benefits:<br>Improves coordination during model reviews.<br>Saves time navigating between views.<br><br>
+                📝 Best Practice:<br>Use Sync Views during coordination meetings to ensure all participants view the same part of the model.`
+            },
+            {
+                title: "👀 9. Who Did That?",
+                content: `📚 Overview:<br>Who Did That? identifies the author of changes or modifications within the model, helping trace accountability.<br><br>
+                🛠️ Use Cases:<br>Tracking changes in collaborative models.<br>Identifying responsible team members.<br>Auditing model modifications.<br><br>
+                ⚡ Benefits:<br>Improves accountability and transparency.<br>Simplifies error tracking and correction.<br><br>
+                📝 Best Practice:<br>Use this tool when reviewing model history or investigating unexpected changes.`
+            },
+            {
+                title: "🧹 10. Wipe",
+                content: `📚 Overview:<br>Wipe removes unnecessary elements, views, or filters from models, optimizing file size and improving performance.<br><br>
+                🛠️ Use Cases:<br>Cleaning up models before archiving.<br>Reducing file size for faster loading.<br>Improving model performance.<br><br>
+                ⚡ Benefits:<br>Keeps models lightweight and manageable.<br>Reduces clutter in large models.<br><br>
+                📝 Best Practice:<br>Run Wipe periodically to clean up models and avoid performance bottlenecks.`
+            },
+            {
+                title: "🎯 11. Pick",
+                content: `📚 Overview:<br>Pick simplifies the selection of elements by category, type, or parameter.<br><br>
+                🛠️ Use Cases:<br>Isolating specific elements for modification.<br>Selecting categories for batch processing.<br>Simplifying QA/QC checks.<br><br>
+                ⚡ Benefits:<br>Reduces selection time.<br>Enhances precision in model edits.<br><br>
+                📝 Best Practice:<br>Use Pick to isolate elements during QA checks or model cleanups.`
+            },
+            {
+                title: "🖨️ 12. Print Ordered Sheet Index",
+                content: `📚 Overview:<br>This tool automates the printing of sheets in a specified order, ensuring that drawing sets are issued correctly.<br><br>
+                🛠️ Use Cases:<br>Issuing drawing packages for construction.<br>Ensuring the correct order of sheets.<br>Avoiding manual errors in sheet organization.<br><br>
+                ⚡ Benefits:<br>Saves time in the sheet issuance process.<br>Reduces errors in large drawing packages.<br><br>
+                📝 Best Practice:<br>Use this tool during project issuance to ensure accurate sheet sequencing.`
+            },
+            {
+                title: "📦 13. Minify UI",
+                content: `📚 Overview:<br>Minify UI simplifies the PyRevit ribbon interface by hiding less frequently used tools, providing a clutter-free interface.<br><br>
+                🛠️ Use Cases:<br>Optimizing interface for new users.<br>Focusing on essential tools.<br>Improving navigation speed.<br><br>
+                ⚡ Benefits:<br>Improves focus and reduces distractions.<br>Makes the UI more user-friendly.<br><br>
+                📝 Best Practice:<br>Customize the interface based on the tasks you perform most frequently.`
+            },
+            {
+                title: "🔄 14. Smart Sync to Central",
+                content: `📚 Overview:<br>Smart Sync to Central syncs changes with the central model while minimizing conflicts and delays.<br><br>
+                🛠️ Use Cases:<br>Syncing models during collaborative work.<br>Avoiding sync conflicts and errors.<br>Managing large projects with multiple contributors.<br><br>
+                ⚡ Benefits:<br>Reduces sync errors.<br>Ensures smooth collaboration.<br><br>
+                📝 Best Practice:<br>Use Smart Sync frequently to maintain model consistency during multi-user collaboration.`
+            },
+            {
+                title: "👁️ 15. Show View Range",
+                content: `📚 Overview:<br>Show View Range displays and visualizes the view range settings in a given view, preventing visibility issues.<br><br>
+                🛠️ Use Cases:<br>Debugging visibility issues.<br>Ensuring correct view settings.<br>Improving QA processes.<br><br>
+                ⚡ Benefits:<br>Reduces errors caused by incorrect view settings.<br>Enhances visibility management.<br><br>
+                📝 Best Practice:<br>Use Show View Range when troubleshooting visibility problems in plan views.`
+            },
+            {
+                title: "📝 16. Manage Keynotes",
+                content: `📚 Overview:<br>Manage Keynotes simplifies importing, modifying, and managing keynote files within Revit.<br><br>
+                🛠️ Use Cases:<br>Managing project specifications and annotations.<br>Updating keynote references efficiently.<br>Streamlining documentation.<br><br>
+                ⚡ Benefits:<br>Improves keynote management.<br>Ensures consistent annotation practices.<br><br>
+                📝 Best Practice:<br>Update and standardize keynotes regularly to reflect project changes.`
+            },
+            {
+                title: "📊 17. Inspect - List Family Sizes",
+                content: `📚 Overview:<br>Inspect - List Family Sizes provides a list of family sizes loaded in the project, helping optimize performance.<br><br>
+                🛠️ Use Cases:<br>Analyzing family sizes to prevent bloated models.<br>Identifying large families that impact performance.<br>Optimizing project file size.<br><br>
+                ⚡ Benefits:<br>Reduces unnecessary data in models.<br>Improves model performance.<br><br>
+                📝 Best Practice:<br>Periodically inspect family sizes to prevent performance degradation.`
+            },
+            {
+                title: "📏 18. Lines Per View Counter",
+                content: `📚 Overview:<br>This tool counts the number of lines in a view, helping identify potential performance issues.<br><br>
+                🛠️ Use Cases:<br>Identifying views with excessive linework.<br>Troubleshooting performance bottlenecks.<br>Maintaining lightweight models.<br><br>
+                ⚡ Benefits:<br>Helps optimize views.<br>Improves model responsiveness.<br><br>
+                📝 Best Practice:<br>Use this tool when troubleshooting slow model performance.`
+            },
+            {
+                title: "🔁 19. Cycle Types (Family Editor)",
+                content: `📚 Overview:<br>Cycle Types switches between family types quickly when editing families in the Family Editor.<br><br>
+                🛠️ Use Cases:<br>Testing different family types.<br>Speeding up family editing processes.<br>Improving family development workflows.<br><br>
+                ⚡ Benefits:<br>Saves time in family editing.<br>Allows for quick testing of variations.<br><br>
+                📝 Best Practice:<br>Use Cycle Types frequently when working on complex family types.`
+            },
+            {
+                title: "📦 20. Bundles Creator",
+                content: `📚 Overview:<br>Bundles Creator packages custom scripts and extensions for distribution and reuse.<br><br>
+                🛠️ Use Cases:<br>Distributing custom PyRevit extensions.<br>Standardizing automation tools across teams.<br>Simplifying tool sharing.<br><br>
+                ⚡ Benefits:<br>Improves team productivity.<br>Encourages knowledge sharing.<br><br>
+                📝 Best Practice:<br>Create bundles to share automation tools across multiple teams efficiently.`
+            }
+        ];
+        const tools = items.map((item, index) => {
+            return {
+                title: item.title,
+                content: item.content
+            };
+        });
+        const toolsContainer = document.getElementById('tools');
+
+        tools.forEach((tool, index) => {
+            toolsContainer.innerHTML += `
+                <button class="accordion">${tool.title}</button>
+                <div class="panel">
+                    <div class="content">${tool.content}</div>
+                </div>
+            `;
+        });
+
+        const accordions = document.querySelectorAll('.accordion');
+
+        accordions.forEach((accordion) => {
+            accordion.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        });
+
+        function searchTools() {
+            const input = document.getElementById('search').value.toLowerCase();
+            const accordionButtons = document.querySelectorAll('.accordion');
+            accordionButtons.forEach((accordion, index) => {
+                const txtValue = accordion.textContent || accordion.innerText;
+                if (txtValue.toLowerCase().indexOf(input) > -1) {
+                    accordion.style.display = "block";
+                    accordion.nextElementSibling.style.display = "block";
+                } else {
+                    accordion.style.display = "none";
+                    accordion.nextElementSibling.style.display = "none";
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
