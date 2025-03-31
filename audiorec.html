@@ -11,14 +11,15 @@
             text-align: center;
             margin: 50px;
         }
-        button {
+        button, a {
             padding: 10px 20px;
             font-size: 16px;
             margin: 10px;
         }
         #download {
-            display: none;
-            margin-top: 20px;
+            display: inline-block;
+            pointer-events: none;
+            opacity: 0.5;
         }
     </style>
 </head>
@@ -26,12 +27,19 @@
     <h1>System & Microphone Sound Recorder</h1>
     <button id="start">Start Recording</button>
     <button id="stop" disabled>Stop Recording</button>
-    <a id="download">Download Recording</a>
+    <a id="download" disabled>Download Recording</a>
 
     <script>
         let mediaRecorder;
         let audioChunks = [];
         let combinedStream;
+        let audioBlob;
+
+        // Show the download button immediately but disable it
+        const downloadLink = document.getElementById('download');
+        downloadLink.href = '#';
+        downloadLink.textContent = 'Download Recording';
+        downloadLink.style.display = 'block';
 
         document.getElementById('start').addEventListener('click', async () => {
             console.log("Requesting screen and microphone permissions...");
@@ -64,16 +72,27 @@
                 };
 
                 mediaRecorder.onstop = async () => {
-                    console.log("Recording stopped. Converting to MP3...");
+                    console.log("Recording stopped. Processing audio...");
 
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const mp3Blob = await convertWebMtoMP3(audioBlob);
+                    audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
 
-                    if (mp3Blob) {
-                        console.log("Conversion to MP3 completed.");
-                        showDownloadLink(mp3Blob);
-                    } else {
-                        alert("Failed to convert to MP3. Try again.");
+                    // Enable download button after stopping
+                    downloadLink.removeAttribute('disabled');
+                    downloadLink.style.pointerEvents = 'auto';
+                    downloadLink.style.opacity = '1';
+
+                    try {
+                        const mp3Blob = await convertWebMtoMP3(audioBlob);
+                        if (mp3Blob) {
+                            console.log("MP3 Conversion successful.");
+                            showDownloadLink(mp3Blob, 'recording.mp3');
+                        } else {
+                            console.warn("MP3 Conversion failed. Falling back to WebM.");
+                            showDownloadLink(audioBlob, 'recording.webm');
+                        }
+                    } catch (error) {
+                        console.error("Error during MP3 conversion:", error);
+                        showDownloadLink(audioBlob, 'recording.webm');
                     }
                 };
 
@@ -117,14 +136,11 @@
             return new Blob([mp3Data.buffer], { type: 'audio/mp3' });
         }
 
-        function showDownloadLink(mp3Blob) {
-            const audioUrl = URL.createObjectURL(mp3Blob);
-            const downloadLink = document.getElementById('download');
+        function showDownloadLink(blob, fileName) {
+            const audioUrl = URL.createObjectURL(blob);
             downloadLink.href = audioUrl;
-            downloadLink.download = 'recording.mp3';
-            downloadLink.style.display = 'block';
-            downloadLink.textContent = 'Download MP3 Recording';
-            console.log("Download link ready.");
+            downloadLink.download = fileName;
+            downloadLink.textContent = `Download ${fileName}`;
         }
     </script>
 </body>
