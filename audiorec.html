@@ -16,13 +16,17 @@
             font-size: 16px;
             margin: 10px;
         }
+        #download {
+            display: none;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>System & Microphone Sound Recorder</h1>
     <button id="start">Start Recording</button>
     <button id="stop" disabled>Stop Recording</button>
-    <a id="download" style="display: none;">Download Recording</a>
+    <a id="download">Download Recording</a>
 
     <script>
         let mediaRecorder;
@@ -64,13 +68,13 @@
 
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                     const mp3Blob = await convertWebMtoMP3(audioBlob);
-                    
-                    const audioUrl = URL.createObjectURL(mp3Blob);
-                    const downloadLink = document.getElementById('download');
-                    downloadLink.href = audioUrl;
-                    downloadLink.download = 'recording.mp3';
-                    downloadLink.style.display = 'block';
-                    downloadLink.textContent = 'Download MP3 Recording';
+
+                    if (mp3Blob) {
+                        console.log("Conversion to MP3 completed.");
+                        showDownloadLink(mp3Blob);
+                    } else {
+                        alert("Failed to convert to MP3. Try again.");
+                    }
                 };
 
                 mediaRecorder.start();
@@ -101,7 +105,7 @@
                 await ffmpeg.load();
             }
 
-            // Load WebM file
+            // Load WebM file into FFmpeg
             const webmData = await fetchFile(webmBlob);
             ffmpeg.FS('writeFile', 'input.webm', webmData);
 
@@ -111,6 +115,16 @@
             // Read MP3 data
             const mp3Data = ffmpeg.FS('readFile', 'output.mp3');
             return new Blob([mp3Data.buffer], { type: 'audio/mp3' });
+        }
+
+        function showDownloadLink(mp3Blob) {
+            const audioUrl = URL.createObjectURL(mp3Blob);
+            const downloadLink = document.getElementById('download');
+            downloadLink.href = audioUrl;
+            downloadLink.download = 'recording.mp3';
+            downloadLink.style.display = 'block';
+            downloadLink.textContent = 'Download MP3 Recording';
+            console.log("Download link ready.");
         }
     </script>
 </body>
