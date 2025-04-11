@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text to Colored Pixels</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    #output {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 25px);
+      gap: 0;
+      margin-top: 20px;
+    }
+    .pixel {
+      width: 25px;
+      height: 25px;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px;
+    }
+    #legend {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+    }
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>Convert Text to Colored Pixels</h2>
+  <textarea id="inputText" placeholder="Enter your text here..."></textarea>
+  <br />
+  <button onclick="renderPixels()">Render Pixels</button>
+  <div id="output"></div>
+  <h3>Legend</h3>
+  <div id="legend"></div>
+
+  <script>
+    const colorMap = {};
+    const distinctColors = [
+      '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0',
+      '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8',
+      '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000'
+    ];
+
+    function getColor(char) {
+      if (char === ' ') return '#ffffff';
+      if (char === '.') return '#000000';
+      const lowerChar = char.toLowerCase();
+      if (!colorMap[lowerChar]) {
+        const keys = Object.keys(colorMap);
+        colorMap[lowerChar] = distinctColors[keys.length % distinctColors.length];
+      }
+      return colorMap[lowerChar];
+    }
+
+    function renderLegend() {
+      const legend = document.getElementById('legend');
+      legend.innerHTML = '';
+      Object.keys(colorMap).sort().forEach(char => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        const colorBox = document.createElement('div');
+        colorBox.className = 'legend-color';
+        colorBox.style.backgroundColor = colorMap[char];
+        const label = document.createElement('span');
+        label.textContent = `'${char}'`;
+        item.appendChild(colorBox);
+        item.appendChild(label);
+        legend.appendChild(item);
+      });
+
+      const spaceItem = document.createElement('div');
+      spaceItem.className = 'legend-item';
+      const spaceBox = document.createElement('div');
+      spaceBox.className = 'legend-color';
+      spaceBox.style.backgroundColor = '#ffffff';
+      spaceItem.appendChild(spaceBox);
+      spaceItem.appendChild(document.createTextNode("'space'"));
+      legend.appendChild(spaceItem);
+
+      const dotItem = document.createElement('div');
+      dotItem.className = 'legend-item';
+      const dotBox = document.createElement('div');
+      dotBox.className = 'legend-color';
+      dotBox.style.backgroundColor = '#000000';
+      dotItem.appendChild(dotBox);
+      dotItem.appendChild(document.createTextNode("'.'"));
+      legend.appendChild(dotItem);
+    }
+
+    function renderPixels() {
+      const text = document.getElementById('inputText').value;
+      const container = document.getElementById('output');
+      container.innerHTML = '';
+
+      for (let char of text) {
+        const pixel = document.createElement('div');
+        pixel.className = 'pixel';
+        pixel.style.backgroundColor = getColor(char);
+        container.appendChild(pixel);
+      }
+
+      renderLegend();
+    }
+  </script>
+</body>
+</html>
