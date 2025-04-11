@@ -54,6 +54,12 @@
     canvas, video {
       display: none;
     }
+    #previewImage {
+      margin-top: 10px;
+      max-width: 100%;
+      border: 1px solid #ccc;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -61,11 +67,10 @@
   <textarea id="inputText" placeholder="Enter your text here..."></textarea>
   <br />
   <button onclick="renderPixels()">Render Pixels</button>
-  <button id="decodeButton" onclick="decodePixels()">Decode from Pixels</button>
-  <button id="downloadButton" onclick="downloadImage()">Download as Image</button>
-  <input type="file" accept="image/*" id="imageInput" onchange="decodeFromImage(event)" />
-  <button onclick="startCameraDecoding()">Live Camera Decode</button>
-  <video id="video" width="320" height="240" autoplay></video>
+  <button onclick="decodePixels()">Decode from Pixels</button>
+  <button onclick="downloadImage()">Download as Image</button>
+  <input type="file" accept="image/*" id="imageInput" capture="environment" onchange="decodeFromImage(event)" />
+  <img id="previewImage" alt="Preview will appear here" />
   <div id="output"></div>
   <h3>Legend</h3>
   <div id="legend"></div>
@@ -74,6 +79,7 @@
   <canvas id="hiddenCanvas"></canvas>
 
   <script>
+    const previewImage = document.getElementById('previewImage');
     const colorMap = {};
     const reverseMap = {};
     const distinctColors = [
@@ -113,7 +119,6 @@
         item.appendChild(label);
         legend.appendChild(item);
       });
-
       const spaceItem = document.createElement('div');
       spaceItem.className = 'legend-item';
       const spaceBox = document.createElement('div');
@@ -122,7 +127,6 @@
       spaceItem.appendChild(spaceBox);
       spaceItem.appendChild(document.createTextNode("'space'"));
       legend.appendChild(spaceItem);
-
       const dotItem = document.createElement('div');
       dotItem.className = 'legend-item';
       const dotBox = document.createElement('div');
@@ -137,12 +141,10 @@
       const text = document.getElementById('inputText').value;
       const container = document.getElementById('output');
       container.innerHTML = '';
-
       const total = text.length;
       const size = Math.ceil(Math.sqrt(total));
       const fullGridCount = size * size;
       container.style.gridTemplateColumns = `repeat(${size}, 25px)`;
-
       for (let i = 0; i < fullGridCount; i++) {
         const char = i < total ? text[i] : ' ';
         const pixel = document.createElement('div');
@@ -152,7 +154,6 @@
         pixel.title = `'${char}'`;
         container.appendChild(pixel);
       }
-
       renderLegend();
     }
 
@@ -188,7 +189,6 @@
       canvas.width = size * 25;
       canvas.height = size * 25;
       const ctx = canvas.getContext('2d');
-
       Array.from(container.children).forEach((pixel, index) => {
         const color = pixel.style.backgroundColor;
         const x = (index % size) * 25;
@@ -196,7 +196,6 @@
         ctx.fillStyle = color;
         ctx.fillRect(x, y, 25, 25);
       });
-
       const link = document.createElement('a');
       link.download = 'colored-pixels.png';
       link.href = canvas.toDataURL();
@@ -206,15 +205,14 @@
     function decodeFromImage(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const img = new Image();
       img.onload = () => {
+        previewImage.src = img.src;
         const canvas = document.getElementById('hiddenCanvas');
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0);
-
         let result = '';
         for (let y = 0; y < img.height; y += 25) {
           for (let x = 0; x < img.width; x += 25) {
@@ -228,34 +226,6 @@
         document.getElementById('decoded').textContent = result.trim();
       };
       img.src = URL.createObjectURL(file);
-    }
-
-    function startCameraDecoding() {
-      const video = document.getElementById('video');
-      const canvas = document.getElementById('hiddenCanvas');
-      const ctx = canvas.getContext('2d');
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-          video.srcObject = stream;
-          video.style.display = 'block';
-          setInterval(() => {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0);
-
-            let result = '';
-            for (let y = 0; y < canvas.height; y += 25) {
-              for (let x = 0; x < canvas.width; x += 25) {
-                const data = ctx.getImageData(x + 12, y + 12, 1, 1).data;
-                const hex = rgbToHex(`rgb(${data[0]},${data[1]},${data[2]})`);
-                if (hex === '#ffffff') result += ' ';
-                else if (hex === '#000000') result += '.';
-                else result += reverseMap[hex] || '?';
-              }
-            }
-            document.getElementById('decoded').textContent = result.trim();
-          }, 2000);
-        });
     }
   </script>
 </body>
