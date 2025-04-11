@@ -47,6 +47,9 @@
       height: 20px;
       border: 1px solid #ccc;
     }
+    #decodeButton {
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -54,12 +57,16 @@
   <textarea id="inputText" placeholder="Enter your text here..."></textarea>
   <br />
   <button onclick="renderPixels()">Render Pixels</button>
+  <button id="decodeButton" onclick="decodePixels()">Decode from Pixels</button>
   <div id="output"></div>
   <h3>Legend</h3>
   <div id="legend"></div>
+  <h3>Decoded Text</h3>
+  <div id="decoded"></div>
 
   <script>
     const colorMap = {};
+    const reverseMap = {};
     const distinctColors = [
       '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0',
       '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8',
@@ -75,7 +82,9 @@
       const normalizedChar = char.toLowerCase();
       if (!colorMap[normalizedChar]) {
         const keys = Object.keys(colorMap);
-        colorMap[normalizedChar] = distinctColors[keys.length % distinctColors.length];
+        const color = distinctColors[keys.length % distinctColors.length];
+        colorMap[normalizedChar] = color;
+        reverseMap[color] = normalizedChar;
       }
       return colorMap[normalizedChar];
     }
@@ -123,12 +132,38 @@
       for (let char of text) {
         const pixel = document.createElement('div');
         pixel.className = 'pixel';
-        pixel.style.backgroundColor = getColor(char);
+        const color = getColor(char);
+        pixel.style.backgroundColor = color;
         pixel.title = `'${char}'`;
         container.appendChild(pixel);
       }
 
       renderLegend();
+    }
+
+    function decodePixels() {
+      const output = document.getElementById('output').children;
+      let result = '';
+      for (let pixel of output) {
+        const color = rgbToHex(pixel.style.backgroundColor);
+        if (color === '#ffffff') result += ' ';
+        else if (color === '#000000') result += '.';
+        else result += reverseMap[color] || '?';
+      }
+      document.getElementById('decoded').textContent = result;
+    }
+
+    function rgbToHex(rgb) {
+      const result = rgb.match(/\d+/g);
+      if (!result) return '';
+      return (
+        '#' +
+        result
+          .slice(0, 3)
+          .map((x) => ('0' + parseInt(x).toString(16)).slice(-2))
+          .join('')
+          .toLowerCase()
+      );
     }
   </script>
 </body>
