@@ -11,9 +11,10 @@
     }
     #output {
       display: grid;
-      grid-template-columns: repeat(auto-fill, 25px);
       gap: 0;
       margin-top: 20px;
+      border: 2px solid black;
+      width: fit-content;
     }
     .pixel {
       width: 25px;
@@ -47,7 +48,7 @@
       height: 20px;
       border: 1px solid #ccc;
     }
-    #decodeButton {
+    #decodeButton, #downloadButton {
       margin-top: 20px;
     }
   </style>
@@ -58,6 +59,7 @@
   <br />
   <button onclick="renderPixels()">Render Pixels</button>
   <button id="decodeButton" onclick="decodePixels()">Decode from Pixels</button>
+  <button id="downloadButton" onclick="downloadImage()">Download as Image</button>
   <div id="output"></div>
   <h3>Legend</h3>
   <div id="legend"></div>
@@ -129,7 +131,13 @@
       const container = document.getElementById('output');
       container.innerHTML = '';
 
-      for (let char of text) {
+      const total = text.length;
+      const size = Math.ceil(Math.sqrt(total));
+      const fullGridCount = size * size;
+      container.style.gridTemplateColumns = `repeat(${size}, 25px)`;
+
+      for (let i = 0; i < fullGridCount; i++) {
+        const char = i < total ? text[i] : ' ';
         const pixel = document.createElement('div');
         pixel.className = 'pixel';
         const color = getColor(char);
@@ -150,7 +158,7 @@
         else if (color === '#000000') result += '.';
         else result += reverseMap[color] || '?';
       }
-      document.getElementById('decoded').textContent = result;
+      document.getElementById('decoded').textContent = result.trim();
     }
 
     function rgbToHex(rgb) {
@@ -164,6 +172,28 @@
           .join('')
           .toLowerCase()
       );
+    }
+
+    function downloadImage() {
+      const container = document.getElementById('output');
+      const size = container.style.gridTemplateColumns.match(/\d+/g)?.[0] || 1;
+      const canvas = document.createElement('canvas');
+      canvas.width = size * 25;
+      canvas.height = size * 25;
+      const ctx = canvas.getContext('2d');
+
+      Array.from(container.children).forEach((pixel, index) => {
+        const color = pixel.style.backgroundColor;
+        const x = (index % size) * 25;
+        const y = Math.floor(index / size) * 25;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, 25, 25);
+      });
+
+      const link = document.createElement('a');
+      link.download = 'colored-pixels.png';
+      link.href = canvas.toDataURL();
+      link.click();
     }
   </script>
 </body>
