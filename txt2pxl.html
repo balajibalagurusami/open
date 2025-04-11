@@ -19,6 +19,9 @@
       width: 25px;
       height: 25px;
     }
+    .pixel[title] {
+      cursor: default;
+    }
     textarea {
       width: 100%;
       height: 100px;
@@ -60,18 +63,21 @@
     const distinctColors = [
       '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0',
       '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8',
-      '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000'
+      '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#a0522d', '#dda0dd',
+      '#1e90ff', '#7fff00', '#ff69b4', '#cd5c5c', '#40e0d0', '#b8860b', '#4682b4', '#dc143c',
+      '#00ced1', '#ff8c00', '#9932cc', '#adff2f', '#8b0000', '#ff00ff', '#2e8b57', '#ffdead',
+      '#ff4500', '#20b2aa', '#daa520', '#ff1493', '#add8e6', '#7cfc00', '#ba55d3', '#d2691e'
     ];
 
     function getColor(char) {
       if (char === ' ') return '#ffffff';
       if (char === '.') return '#000000';
-      const lowerChar = char.toLowerCase();
-      if (!colorMap[lowerChar]) {
+      const normalizedChar = char.toLowerCase();
+      if (!colorMap[normalizedChar]) {
         const keys = Object.keys(colorMap);
-        colorMap[lowerChar] = distinctColors[keys.length % distinctColors.length];
+        colorMap[normalizedChar] = distinctColors[keys.length % distinctColors.length];
       }
-      return colorMap[lowerChar];
+      return colorMap[normalizedChar];
     }
 
     function renderLegend() {
@@ -118,6 +124,7 @@
         const pixel = document.createElement('div');
         pixel.className = 'pixel';
         pixel.style.backgroundColor = getColor(char);
+        pixel.title = `'${char}'`;
         container.appendChild(pixel);
       }
 
