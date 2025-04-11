@@ -31,6 +31,13 @@
       margin-top: 10px;
       padding: 10px;
     }
+    .icon-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+      font-size: 24px;
+    }
     #legend {
       margin-top: 40px;
       display: grid;
@@ -48,17 +55,14 @@
       height: 20px;
       border: 1px solid #ccc;
     }
-    #decodeButton, #downloadButton, #uploadButton {
-      margin-top: 20px;
-    }
-    canvas, video {
-      display: none;
-    }
     #previewImage {
       margin-top: 10px;
       max-width: 100%;
       border: 1px solid #ccc;
       display: block;
+    }
+    canvas, video {
+      display: none;
     }
   </style>
 </head>
@@ -69,7 +73,14 @@
   <button onclick="renderPixels()">Render Pixels</button>
   <button onclick="decodePixels()">Decode from Pixels</button>
   <button onclick="downloadImage()">Download as Image</button>
-  <input type="file" accept="image/*" id="imageInput" capture="environment" onchange="decodeFromImage(event)" />
+  <label class="icon-button" title="Upload Photo for Decoding">
+    📷
+    <input type="file" accept="image/*" capture="environment" id="imageInput" onchange="decodeFromImage(event)" style="display:none;">
+  </label>
+  <label class="icon-button" title="Take Photo from Camera">
+    🎥
+    <input type="file" accept="image/*" capture="environment" onchange="decodeFromImage(event)" style="display:none;">
+  </label>
   <img id="previewImage" alt="Preview will appear here" />
   <div id="output"></div>
   <h3>Legend</h3>
@@ -174,11 +185,7 @@
       if (!result) return '';
       return (
         '#' +
-        result
-          .slice(0, 3)
-          .map((x) => ('0' + parseInt(x).toString(16)).slice(-2))
-          .join('')
-          .toLowerCase()
+        result.slice(0, 3).map(x => ('0' + parseInt(x).toString(16)).slice(-2)).join('').toLowerCase()
       );
     }
 
