@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collapsible Tree Structure with Text Download</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #tree {
+            width: 200px;
+            background-color: #f4f4f4;
+            padding: 10px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+        }
+
+        #content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        h1, h2, h3, h4 {
+            cursor: pointer;
+            color: #2c3e50;
+        }
+
+        .collapsible {
+            padding-left: 20px;
+            display: none;
+            margin-left: 10px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .download-btn {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .download-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="tree">
+        <ul>
+            <li><span class="collapsible-header" onclick="toggleCollapsible('section1')">Section 1</span>
+                <ul class="collapsible" id="section1">
+                    <li><h2>Subheading 1.1</h2></li>
+                    <li><h3>Subheading 1.1.1</h3></li>
+                    <li><h4>Subheading 1.1.1.1</h4></li>
+                </ul>
+            </li>
+            <li><span class="collapsible-header" onclick="toggleCollapsible('section2')">Section 2</span>
+                <ul class="collapsible" id="section2">
+                    <li><h2>Subheading 2.1</h2></li>
+                    <li><h3>Subheading 2.1.1</h3></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div id="content">
+        <h1>Heading 1</h1>
+        <p>This is a description for the first section.</p>
+
+        <h2>Heading 2</h2>
+        <p>This is a description for the second section.</p>
+
+        <h3>Heading 3</h3>
+        <p>This is a description for the third section.</p>
+
+        <h4>Heading 4</h4>
+        <p>This is a description for the fourth section.</p>
+
+        <button class="download-btn" onclick="downloadDocx()">Download as DOCX</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        function toggleCollapsible(sectionId) {
+            var element = document.getElementById(sectionId);
+            element.classList.toggle('active');
+        }
+
+        function downloadDocx() {
+            const doc = new window.Docxtemplater();
+            const content = document.getElementById('content').innerHTML;
+            doc.loadZip(new JSZip()).setData({ content });
+
+            try {
+                const zip = doc.getZip();
+                const output = zip.generate({ type: "blob" });
+                saveAs(output, "document.docx");
+            } catch (error) {
+                console.error('Error generating DOCX:', error);
+            }
+        }
+    </script>
+
+</body>
+</html>
