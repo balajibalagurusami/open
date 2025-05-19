@@ -13,7 +13,7 @@
         }
 
         #tree {
-            width: 200px;
+            width: 250px;
             background-color: #f4f4f4;
             padding: 10px;
             overflow-y: auto;
@@ -53,29 +53,48 @@
         .download-btn:hover {
             background-color: #2980b9;
         }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        .input-container input, .input-container textarea {
+            margin: 5px 0;
+            padding: 8px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .input-container button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .input-container button:hover {
+            background-color: #27ae60;
+        }
     </style>
 </head>
 <body>
 
     <div id="tree">
-        <ul>
-            <li><span class="collapsible-header" onclick="toggleCollapsible('section1')">Section 1</span>
-                <ul class="collapsible" id="section1">
-                    <li><h2>Subheading 1.1</h2></li>
-                    <li><h3>Subheading 1.1.1</h3></li>
-                    <li><h4>Subheading 1.1.1.1</h4></li>
-                </ul>
-            </li>
-            <li><span class="collapsible-header" onclick="toggleCollapsible('section2')">Section 2</span>
-                <ul class="collapsible" id="section2">
-                    <li><h2>Subheading 2.1</h2></li>
-                    <li><h3>Subheading 2.1.1</h3></li>
-                </ul>
-            </li>
+        <ul id="sections">
+            <!-- Sections will be dynamically added here -->
         </ul>
     </div>
 
     <div id="content">
+        <div class="input-container">
+            <h3>Create a New Section</h3>
+            <input type="text" id="newSectionTitle" placeholder="Enter section title">
+            <textarea id="newSectionContent" placeholder="Enter section content" rows="4"></textarea>
+            <button onclick="addSection()">Add Section</button>
+        </div>
+
         <h1>Heading 1</h1>
         <p>This is a description for the first section.</p>
 
@@ -99,14 +118,42 @@
             element.classList.toggle('active');
         }
 
+        function addSection() {
+            var sectionTitle = document.getElementById("newSectionTitle").value;
+            var sectionContent = document.getElementById("newSectionContent").value;
+
+            if (!sectionTitle || !sectionContent) {
+                alert("Please enter both a title and content for the section.");
+                return;
+            }
+
+            // Create new section
+            var sectionId = "section" + Date.now();
+            var treeSection = document.createElement("li");
+            treeSection.innerHTML = `
+                <span class="collapsible-header" onclick="toggleCollapsible('${sectionId}')">${sectionTitle}</span>
+                <ul class="collapsible" id="${sectionId}">
+                    <li><h2>${sectionTitle}</h2><p>${sectionContent}</p></li>
+                </ul>
+            `;
+
+            // Append the new section to the navigation tree
+            document.getElementById("sections").appendChild(treeSection);
+
+            // Clear the input fields
+            document.getElementById("newSectionTitle").value = "";
+            document.getElementById("newSectionContent").value = "";
+        }
+
         function downloadDocx() {
-            const doc = new window.Docxtemplater();
             const content = document.getElementById('content').innerHTML;
-            doc.loadZip(new JSZip()).setData({ content });
+            const zip = new JSZip();
+            const doc = new window.Docxtemplater();
+            doc.loadZip(zip).setData({ content });
 
             try {
-                const zip = doc.getZip();
-                const output = zip.generate({ type: "blob" });
+                const zipFile = doc.getZip();
+                const output = zipFile.generate({ type: "blob" });
                 saveAs(output, "document.docx");
             } catch (error) {
                 console.error('Error generating DOCX:', error);
