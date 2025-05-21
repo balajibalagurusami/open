@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Balaji Balagurusami - BIM Manager</title>
+<style>
+  /* Reset and base styles */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    background: #f9f9f9;
+    color: #333;
+  }
+  a {
+    color: #007acc;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .container {
+    max-width: 900px;
+    margin: 1.5rem auto 3rem auto;
+    padding: 0 1rem;
+    background: white;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+  header {
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #007acc;
+  }
+  header h1 {
+    margin-bottom: 0.2rem;
+    font-size: 2.4rem;
+    color: #004a99;
+  }
+  header p {
+    margin: 0.2rem 0;
+    font-size: 1rem;
+    color: #555;
+  }
+  section {
+    margin-top: 2rem;
+  }
+  h2 {
+    border-bottom: 2px solid #007acc;
+    padding-bottom: 0.3rem;
+    color: #004a99;
+    margin-bottom: 0.8rem;
+  }
+  .contact-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 0.95rem;
+  }
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+  }
+  ul.skills-list, ul.projects-list, ul.cert-list {
+    list-style: none;
+    padding-left: 0;
+    columns: 2;
+    gap: 1rem;
+  }
+  ul.skills-list li, ul.projects-list li, ul.cert-list li {
+    margin-bottom: 0.4rem;
+  }
+  .experience-item, .education-item {
+    margin-bottom: 1.2rem;
+  }
+  .job-title {
+    font-weight: 700;
+    color: #004a99;
+  }
+  .job-company {
+    font-style: italic;
+    color: #555;
+    margin-left: 0.5rem;
+  }
+  .job-date {
+    float: right;
+    color: #777;
+    font-size: 0.9rem;
+  }
+  .clear-fix {
+    clear: both;
+  }
+  .footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #777;
+    margin-top: 3rem;
+    padding-bottom: 1rem;
+  }
+  @media(max-width: 600px) {
+    ul.skills-list, ul.projects-list, ul.cert-list {
+      columns: 1;
+    }
+    .contact-info {
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .job-date {
+      float: none;
+      display: block;
+      margin-top: 0.2rem;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Balaji Balagurusami</h1>
+    <p><strong>BIM Manager | Discipline BIM Coordinator</strong></p>
+    <div class="contact-info" aria-label="Contact Information">
+      <div class="contact-item" title="Email">
+        <img class="icon" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDA3YWNjIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTE4IDE4SDEiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTggMkgxTDIwIDhoMTkiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTggMTJoLTEuNTU5TDEwIDExLjQzNyA0LjU1OSA5Ljk5NiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==" alt="Email icon"/>
+        <a href="mailto:mail@balaji.work">mail@balaji.work</a>
+      </div>
+      <div class="contact-item" title="Phone">
+        <img class="icon" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDA3YWNjIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTMgMTF2NmEyIDIgMCAwIDAgMiAySDE1YTIgMiAwIDAgMCAyLTJ2LTZhMiAyIDAgMCAwLTItMkg1YTggOCAwIDAgMS04IDhoLjAxIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTcgNGE4IDggMCAwIDEgOC04djhhOCA4IDAgMCAxLTgtOCIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==" alt="Phone icon"/>
+        <a href="tel:+918870544018">+91 8870544018</a>
+      </div>
+      <div class="contact-item" title="LinkedIn">
+        <img class="icon" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDA3YWNjIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJub25lIi8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJub25lIi8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJub25lIi8+PC9zdmc+" alt="LinkedIn icon"/>
+        <a href="https://linkedin.com/in/balajibbi" target="_blank" rel="noopener noreferrer">linkedin.com/in/balajibbi</a>
+      </div>
+      <div class="contact-item" title="Portfolio">
+        <img class="icon" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDA3YWNjIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJub25lIi8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJub25lIi8+PC9zdmc+" alt="Portfolio icon"/>
+        <a href="https://balaji.work/portfolio" target="_blank" rel="noopener noreferrer">balaji.work/portfolio</a>
+      </div>
+    </div>
+  </header>
+
+  <section aria-labelledby="summary-title">
+    <h2 id="summary-title">Profile Summary</h2>
+    <p>
+      BIM Manager with extensive experience coordinating multidisciplinary BIM processes for infrastructure and building projects internationally. Skilled in
+      Revit, Dynamo, Civil 3D, Navisworks, BIM 360, and point cloud-based as-built modeling. Proven ability to lead teams, implement BIM execution plans, and
+      deliver high-quality, coordinated models and documentation aligned with ISO 19650 standards.
+    </p>
+  </section>
+
+  <section aria-labelledby="skills-title">
+    <h2 id="skills-title">Technical Skills & Tools</h2>
+    <ul class="skills-list">
+      <li>Revit (Architecture, Structure, MEP), Dynamo Scripting</li>
+      <li>Civil 3D, Bentley OpenRoads Designer, AutoCAD, Trimble Business Centre</li>
+      <li>Navisworks Manage, BIM Collab, BIM Track, Revizto, Fuzor</li>
+      <li>Point Cloud Processing: ReCap Pro, Pix4D Mapper, FARO Scene, Leica TruView</li>
+      <li>Common Data Environment (CDE): BIM 360, Aconex, ProCore, SharePoint</li>
+      <li>Standards: ISO 19650 (Parts 1-4), COBie 2.4</li>
+      <li>Microsoft Office 365, PowerBI, Visio, Lucid Charts</li>
+      <li>Programming: Python (basic), HTML, CSS, JavaScript (basic)</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="experience-title">
+    <h2 id="experience-title">Professional Experience</h2>
+
+    <article class="experience-item">
+      <div>
+        <span class="job-title">Assistant Manager - BIM</span>
+        <span class="job-company">J&F India Private Limited</span>
+        <span class="job-date">Oct 2021 – Present</span>
+      </div>
+      <div class="clear-fix"></div>
+      <p>
+        Leading BIM coordination and management activities including Revit modeling supervision, clash detection, BIM execution planning, and
+        coordination with multiple stakeholders for infrastructure and building projects.
+      </p>
+    </article>
+
+    <article class="experience-item">
+      <div>
+        <span class="job-title">Team Leader - BIM</span>
+        <span class="job-company">HOCHTIEF India Private Limited</span>
+        <span class="job-date">Oct 2019 – Oct 2021</span>
+      </div>
+      <div class="clear-fix"></div>
+      <p>
+        Managed BIM teams and coordinated multi-discipline BIM workflows for large infrastructure projects, ensuring compliance with project standards and
+        delivery timelines.
+      </p>
+    </article>
+
+    <article class="experience-item">
+      <div>
+        <span class="job-title">BIM Coordinator / Senior Design Engineer</span>
+        <span class="job-company">HOCHTIEF India Private Limited</span>
+        <span class="job-date">May 2017 – Oct 2019</span>
+      </div>
+      <div class="clear-fix"></div>
+      <p>
+        Coordinated BIM models, facilitated clash detection, produced deliverables, and implemented automated workflows using Dynamo scripts.
+      </p>
+    </article>
+
+    <article class="experience-item">
+      <div>
+        <span class="job-title">BIM Specialist</span>
+        <span class="job-company">HOCHTIEF ViCon Qatar WLL</span>
+        <span class="job-date">Jul 2014 – Apr 2017</span>
+      </div>
+      <div class="clear-fix"></div>
+      <p>
+        Specialized in BIM modeling, coordination, and quality assurance for major infrastructure projects in Qatar, including point cloud and asset data integration.
+      </p>
+    </article>
+
+    <article class="experience-item">
+      <div>
+        <span class="job-title">Design Engineer</span>
+        <span class="job-company">HOCHTIEF India Private Limited</span>
+        <span class="job-date">Mar 2013 – Jul 2014</span>
+      </div>
+      <div class="clear-fix"></div>
+      <p>
+        Supported project design teams with CAD drafting and engineering deliverables.
+      </p>
+    </article>
+  </section>
+
+  <section aria-labelledby="education-title">
+    <h2 id="education-title">Education</h2>
+    <article class="education-item">
+      <strong>Bachelor of Engineering in Civil Engineering</strong><br/>
+      Anna University of Technology, BIT Campus, Tiruchirappalli<br/>
+      2008 – 2012<br/>
+      CGPA: 7.8
+    </article>
+  </section>
+
+  <section aria-labelledby="certifications-title">
+    <h2 id="certifications-title">Certifications & Training</h2>
+    <ul class="cert-list">
+      <li>Advanced Certification in Data Science and Artificial Intelligence - CCE IIT Madras & Intellipaat</li>
+      <li>English Proficiency - Pearson Test of English (PTE) Score: 77/90</li>
+      <li>Project Management Intermediate (2024)</li>
+      <li>LinkedIn Learning: Autodesk Revit, Navisworks, Civil 3D, Bentley OpenRoads Designer</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="projects-title">
+    <h2 id="projects-title">Selected Projects</h2>
+    <ul class="projects-list">
+      <li><strong>Østlig Ringveg (Denmark, 2023-2025)</strong> — Discipline BIM Coordinator for Immersed & Cut & Cover Tunnels in JV with Arup.</li>
+      <li><strong>Potomac River Tunnel (USA, 2023-2025)</strong> — EDC Coordinator & CAD/BIM Manager for combined sewer overflow tunnels.</li>
+      <li><strong>Indian Institute of Technology, Palakkad (2019-2024)</strong> — BIM Manager for academic and staff quarters.</li>
+      <li><strong>West Gate Tunnel Project (2017-2024)</strong> — Assistant Manager BIM, Design Coordination for tunnels, elevated cycle paths, bridges.</li>
+      <li><strong>Lusail City, Qatar (2014-2022)</strong> — BIM Coordinator & Asset Data Collector for infrastructure related to FIFA 2022.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="links-title">
+    <h2 id="links-title">Links & Profiles</h2>
+    <ul>
+      <li><a href="https://balaji.work" target="_blank" rel="noopener noreferrer">balaji.work</a></li>
+      <li><a href="https://balaji.work/portfolio" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
+      <li><a href="https://github.com/balajibalagurusami" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><a href="https://linkedin.com/in/balajibbi" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+    </ul>
+  </section>
+
+  <footer class="footer" role="contentinfo">
+    &copy; 2025 Balaji Balagurusami. All rights reserved.
+  </footer>
+</div>
+</body>
+</html>
