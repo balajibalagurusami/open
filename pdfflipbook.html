@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All-in-One PDF Flipbook Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- PageFlip CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/stpageflip@2.0.4/dist/css/stpageflip.min.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 1em;
+    }
+    input, button {
+      padding: 0.6em;
+      font-size: 1em;
+      margin: 0.5em;
+    }
+    #container {
+      margin-top: 1em;
+      max-width: 90vw;
+      height: 80vh;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+    }
+    .controls {
+      margin-top: 1em;
+      flex-wrap: wrap;
+    }
+    button {
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #666;
+    }
+    #flipbook {
+      width: 100%;
+      height: 100%;
+    }
+    #page-info {
+      display: inline-block;
+      margin-left: 10px;
+    }
+    @media (max-width: 600px) {
+      input {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📖 PDF Flipbook Viewer</h2>
+
+  <div>
+    <input type="text" id="pdfUrl" placeholder="Paste PDF URL or Google Drive link" size="60" />
+    <button onclick="loadFromUrl()">Load URL</button>
+    <input type="file" id="pdfFile" accept=".pdf" onchange="loadFromFile(this.files[0])" />
+  </div>
+
+  <div id="container">
+    <div id="flipbook"></div>
+  </div>
+
+  <div class="controls">
+    <button onclick="flipBook?.flipPrev()">⬅️ Prev</button>
+    <button onclick="flipBook?.flipNext()">Next ➡️</button>
+    <button onclick="zoomIn()">🔍 Zoom In</button>
+    <button onclick="zoomOut()">🔎 Zoom Out</button>
+    <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    <span id="page-info">Page: 0 / 0</span>
+  </div>
+
+  <audio id="flip-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c3026947f.mp3?filename=page-flip-1-105447.mp3"></audio>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stpageflip@2.0.4/dist/js/stpageflip.min.js"></script>
+
+  <script>
+    let flipBook = null;
+    let pages = [];
+    let zoom = 1;
+    const container = document.getElementById('container');
+    const flipSound = document.getElementById('flip-sound');
+    const pageInfo = document.getElementById('page-info');
+
+    function convertGoogleDriveLink(url) {
+      const match = url.match(/drive\.google\.com\/file\/d\/(.*?)\//);
+      if (match && match[1]) {
+        const fileId = match[1];
+        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+      }
+      return url;
+    }
+
+    function loadFromUrl() {
+      let url = document.getElementById('pdfUrl').value.trim();
+      if (!url) return alert("Please enter a PDF URL.");
+      url = convertGoogleDriveLink(url);
+      loadPdf(url);
+    }
+
+    function loadFromFile(file) {
+      if (!file || file.type !== "application/pdf") return alert("Please upload a PDF file.");
+      const reader = new FileReader();
+      reader.onload = () => loadPdf(reader.result);
+      reader.readAsArrayBuffer(file);
+    }
+
+    async function loadPdf(src) {
+      const loadingTask = typeof src === "string" ? pdfjsLib.getDocument(src) : pdfjsLib.getDocument({ data: src });
+      try {
+        const pdf = await loadingTask.promise;
+        const numPages = pdf.numPages;
+        pages = [];
+        for (let i = 1; i <= numPages; i++) {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 2 });
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          await page.render({ canvasContext: context, viewport: viewport }).promise;
+          pages.push(canvas.toDataURL());
+        }
+        initFlipbook(pages);
+        const lastPage = parseInt(localStorage.getItem("lastPage") || "0", 10);
+        setTimeout(() => flipBook.flip(lastPage), 500);
+      } catch (e) {
+        alert("Failed to load PDF: " + e.message);
+      }
+    }
+
+    function initFlipbook(images) {
+      const flipEl = document.getElementById('flipbook');
+      flipEl.innerHTML = "";
+      if (flipBook) {
+        flipBook.destroy();
+        flipBook = null;
+      }
+      flipBook = new St.PageFlip(flipEl, {
+        width: 500,
+        height: 700,
+        size: "stretch",
+        maxShadowOpacity: 0.5,
+        showCover: false,
+        useMouseEvents: true,
+        flippingTime: 700
+      });
+      flipBook.loadFromImages(images);
+      flipBook.on("flip", e => {
+        flipSound.currentTime = 0;
+        flipSound.play();
+        localStorage.setItem("lastPage", e.data);
+        pageInfo.textContent = `Page: ${e.data + 1} / ${images.length}`;
+      });
+      pageInfo.textContent = `Page: 1 / ${images.length}`;
+    }
+
+    function zoomIn() {
+      zoom += 0.1;
+      container.style.transform = `scale(${zoom})`;
+      container.style.transformOrigin = 'top center';
+    }
+
+    function zoomOut() {
+      zoom = Math.max(0.5, zoom - 0.1);
+      container.style.transform = `scale(${zoom})`;
+      container.style.transformOrigin = 'top center';
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        container.requestFullscreen().catch(err => alert("Failed to enter fullscreen"));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  </script>
+  <script>
+    document.getElementById("pdfFile").addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (file && file.type === "application/pdf") {
+        loadFromFile(file);
+      } else {
+        alert("Please select a valid PDF file.");
+      }
+    });
+  </script>
+
+</body>
+</html>
