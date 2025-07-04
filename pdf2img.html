@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PDF to JPG Converter</title>
   <style>
@@ -28,6 +28,26 @@
       cursor: pointer;
       display: inline-block;
       margin-bottom: 1rem;
+    }
+    #progressContainer {
+      width: 100%;
+      max-width: 400px;
+      margin: 1rem auto;
+      background: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+    }
+    #progressBar {
+      height: 16px;
+      width: 0%;
+      background: #28a745;
+      transition: width 0.3s ease;
+    }
+    #pageCount {
+      font-weight: bold;
+      margin-top: 0.5rem;
+      display: none;
     }
     #downloadZip {
       background: #28a745;
@@ -58,6 +78,12 @@
   <h1>PDF to JPG Converter</h1>
   <label class="upload-btn" for="pdfInput">Upload PDF</label>
   <input type="file" id="pdfInput" accept="application/pdf"/>
+
+  <div id="progressContainer">
+    <div id="progressBar"></div>
+  </div>
+  <div id="pageCount"></div>
+
   <div id="preview"></div>
   <button id="downloadZip">Download All JPGs (ZIP)</button>
 
@@ -70,6 +96,10 @@
     const pdfInput = document.getElementById('pdfInput');
     const preview = document.getElementById('preview');
     const downloadBtn = document.getElementById('downloadZip');
+    const progressBar = document.getElementById('progressBar');
+    const progressContainer = document.getElementById('progressContainer');
+    const pageCountText = document.getElementById('pageCount');
+
     let jpgBlobs = [];
 
     pdfInput.addEventListener('change', async function () {
@@ -78,10 +108,18 @@
 
       const pdfData = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+      const totalPages = pdf.numPages;
+
       jpgBlobs = [];
       preview.innerHTML = '';
+      downloadBtn.style.display = 'none';
+      progressBar.style.width = '0%';
+      progressContainer.style.display = 'block';
+      pageCountText.style.display = 'block';
 
-      for (let i = 1; i <= pdf.numPages; i++) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageCountText.textContent = `Rendering page ${i} of ${totalPages}`;
+
         const page = await pdf.getPage(i);
         const viewport = page.getViewport({ scale: 2 });
         const canvas = document.createElement('canvas');
@@ -91,17 +129,21 @@
 
         await page.render({ canvasContext: context, viewport }).promise;
 
-        // Preview
         preview.appendChild(canvas.cloneNode(true));
 
-        // Convert to Blob
-        canvas.toBlob(blob => {
-          jpgBlobs.push({ name: `page-${i}.jpg`, blob });
-          if (jpgBlobs.length === pdf.numPages) {
-            downloadBtn.style.display = 'inline-block';
-          }
-        }, 'image/jpeg', 1.0);
+        await new Promise(resolve => {
+          canvas.toBlob(blob => {
+            jpgBlobs.push({ name: `page-${i}.jpg`, blob });
+            resolve();
+          }, 'image/jpeg', 1.0);
+        });
+
+        const percent = Math.round((i / totalPages) * 100);
+        progressBar.style.width = percent + '%';
       }
+
+      pageCountText.textContent = `All ${totalPages} pages rendered`;
+      downloadBtn.style.display = 'inline-block';
     });
 
     downloadBtn.addEventListener('click', () => {
