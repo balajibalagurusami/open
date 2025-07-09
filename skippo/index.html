@@ -1,138 +1,132 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Shallow Sea Depth Map (0m to 12m)</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
+    <meta charset="utf-8">
+    <title>Mapbox GL JS - Shallow Sea Depth Map (0m to -12m)</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Prevent scrollbars if map is full screen */
-        }
-        #map {
-            height: 100vh; /* Make map take full viewport height */
-            width: 100vw;  /* Make map take full viewport width */
-        }
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
     </style>
 </head>
 <body>
-    <div id="map"></div>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<div id="map"></div>
 
-    <script>
-        // Initialize the map, centered at [0, 0] with zoom level 2 (global view)
-        // You can adjust the center coordinates and zoom level to focus on your area of interest.
-        // Example for Chennai, India (approximated): .setView([13.0827, 80.2707], 10);
-        var map = L.map('map').setView([0, 0], 2);
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
 
-        // Add a base tile layer (OpenStreetMap in this case)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+<script>
+    // TO-DO: Replace 'YOUR_MAPBOX_ACCESS_TOKEN' with your actual Mapbox public access token
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYmFsYWppY293aSIsImEiOiJjbWN2cTRyMXQwMTd3MmpwdjNpaDUzdWhwIn0.ykTEJuDI8r_tdUK0aRRStw';
 
-        // Define the path to your GeoJSON file.
-        // When using VS Code's Live Server, this path is relative to the served directory.
-        // Since both index.html and gebco_depth_tile.geojson are in the same folder,
-        // just the filename is sufficient.
-        const geojsonFilePath = 'gebco_depth_tile.geojson';
+    // Initialize the map
+    // Setting initial center and zoom based on your GeoJSON sample coordinates.
+    // Coordinates are [longitude, latitude] for Mapbox.
+    const map = new mapboxgl.Map({
+        container: 'map', // container ID
+        style: 'mapbox://styles/mapbox/light-v11', // You can try 'mapbox://styles/mapbox/outdoors-v12' for more terrain features, or a custom one
+        center: [12.69, 55.635], // Approximate center of your GeoJSON sample [longitude, latitude]
+        zoom: 12 // Adjust initial zoom level as needed
+    });
 
-        // Fetch the GeoJSON data
-        fetch(geojsonFilePath)
-            .then(response => {
-                // Check if the network request was successful
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status} - Could not load ${geojsonFilePath}. Ensure it's in the same folder as index.html and Live Server is running.`);
-                }
-                // Parse the JSON response
-                return response.json();
-            })
+    map.on('load', () => {
+        // Add your GeoJSON data as a source
+        map.addSource('gebco-depth-data', {
+            type: 'geojson',
+            data: 'gebco_depth_tile.geojson' // Path relative to your server root
+        });
+
+        // Add a fill layer to color the polygons based on depth
+        map.addLayer({
+            'id': 'gebco-depth-polygons',
+            'type': 'fill', // Use 'fill' type for polygons
+            'source': 'gebco-depth-data',
+            'layout': {},
+            'paint': {
+                // Style the fill color based on the 'depth' property
+                // Using Mapbox expressions for data-driven styling
+                'fill-color': [
+                    'case', // Start a conditional expression
+                    ['==', ['get', 'depth'], null], '#CCCCCC', // If depth is null/undefined
+                    ['>=', ['get', 'depth'], 0], '#A0D6B4',   // Land/above water (depth >= 0)
+                    ['all', ['<', ['get', 'depth'], 0], ['>=', ['get', 'depth'], -2]], '#ADD8E6',   // 0m to -2m
+                    ['all', ['<', ['get', 'depth'], -2], ['>=', ['get', 'depth'], -4]], '#87CEEB',   // -2m to -4m
+                    ['all', ['<', ['get', 'depth'], -4], ['>=', ['get', 'depth'], -6]], '#6495ED',   // -4m to -6m
+                    ['all', ['<', ['get', 'depth'], -6], ['>=', ['get', 'depth'], -8]], '#4169E1',   // -6m to -8m
+                    ['all', ['<', ['get', 'depth'], -8], ['>=', ['get', 'depth'], -10]], '#1E90FF', // -8m to -10m
+                    ['all', ['<', ['get', 'depth'], -10], ['>=', ['get', 'depth'], -12]], '#0000CD', // -10m to -12m
+                    /* ELSE */ '#00008B' // Deeper than -12m (dark blue)
+                ],
+                'fill-opacity': 0.8
+            }
+        });
+
+        // Optional: Add a line layer to show the polygon borders
+        map.addLayer({
+            'id': 'gebco-depth-borders',
+            'type': 'line', // Use 'line' type for borders
+            'source': 'gebco-depth-data',
+            'layout': {},
+            'paint': {
+                'line-color': '#444', // Dark grey border
+                'line-width': 0.5,
+                'line-opacity': 0.7
+            }
+        });
+
+        // Fit the map to the bounds of the GeoJSON data once it's loaded and rendered
+        // This ensures your data is visible.
+        const geojsonUrl = 'gebco_depth_tile.geojson';
+        fetch(geojsonUrl)
+            .then(response => response.json())
             .then(data => {
-                console.log("GeoJSON data loaded:", data);
-
-                // Add the GeoJSON data to the map with custom styling and popups
-                L.geoJSON(data, {
-                    // Style function to color polygons based on 'depth' property
-                    style: function(feature) {
-                        const depth = feature.properties.depth; // Access the depth property
-
-                        let color;
-                        let fillOpacity = 0.8; // Default opacity for visible depths
-                        let weight = 0.5;      // Default border weight for polygons
-                        let borderColor = '#333'; // Darker border for contrast
-
-                        // Define colors for the 0m to 12m range and handle other cases
-                        if (depth === undefined || depth === null) {
-                            color = '#CCCCCC'; // Light grey for features without a depth value
-                            fillOpacity = 0.5;
-                            borderColor = '#999';
-                        } else if (depth <= 0) { // Land or above water (assuming 0m is coastline)
-                            color = '#A0D6B4'; // Light green for land areas
-                            fillOpacity = 0.8;
-                        } else if (depth > 0 && depth <= 2) { // 0m to 2m deep
-                            color = '#ADD8E6'; // Light Blue
-                        } else if (depth > 2 && depth <= 4) { // 2m to 4m deep
-                            color = '#87CEEB'; // Sky Blue
-                        } else if (depth > 4 && depth <= 6) { // 4m to 6m deep
-                            color = '#6495ED'; // Cornflower Blue
-                        } else if (depth > 6 && depth <= 8) { // 6m to 8m deep
-                            color = '#4169E1'; // Royal Blue
-                        } else if (depth > 8 && depth <= 10) { // 8m to 10m deep
-                            color = '#1E90FF'; // Dodger Blue
-                        } else if (depth > 10 && depth <= 12) { // 10m to 12m deep
-                            color = '#0000CD'; // Medium Blue
-                        } else { // Depths greater than 12m (deeper water)
-                            color = '#00008B'; // Dark Blue for deeper water
-                            // To make deeper areas completely transparent, uncomment the lines below:
-                            // fillOpacity = 0;
-                            // weight = 0;
-                            // borderColor = 'transparent';
-                        }
-
-                        return {
-                            fillColor: color,
-                            color: borderColor,
-                            weight: weight,
-                            opacity: 0.7,      // Border opacity
-                            fillOpacity: fillOpacity
-                        };
-                    },
-                    // Function to bind a popup to each feature on click
-                    onEachFeature: function(feature, layer) {
-                        if (feature.properties && feature.properties.depth !== undefined) {
-                            const displayDepth = feature.properties.depth;
-                            let popupContent = "";
-
-                            if (displayDepth <= 0) {
-                                popupContent = "Land / Above water";
-                            } else if (displayDepth > 12) {
-                                popupContent = `Depth: ${displayDepth} m (Deeper than 12m)`;
-                            } else {
-                                popupContent = `Depth: ${displayDepth} m`;
-                            }
-                            layer.bindPopup(popupContent);
-                        }
-                    }
-                }).addTo(map);
-
-                // Optional: Adjust map view to fit the loaded GeoJSON data
-                // This will zoom and pan the map to show all the contours.
-                const bounds = L.geoJSON(data).getBounds();
-                if (bounds.isValid()) { // Check if bounds are valid (i.e., if there's actual data)
-                    map.fitBounds(bounds);
-                } else {
-                    console.warn("No valid bounds found for GeoJSON data. Map will not auto-zoom.");
+                if (data.features && data.features.length > 0) {
+                    const bbox = turf.bbox(data); // Requires Turf.js for bbox calculation
+                    map.fitBounds(bbox, {
+                        padding: 20, // Add some padding around the bounds
+                        duration: 1000 // Animation duration
+                    });
                 }
             })
             .catch(error => {
-                // Log any errors that occur during the fetch operation
-                console.error('There was a problem fetching the GeoJSON file:', error);
+                console.error('Error fetching GeoJSON for bounds:', error);
             });
 
-    </script>
+        // Add a click event for popups (similar to onEachFeature in Leaflet)
+        map.on('click', 'gebco-depth-polygons', (e) => {
+            const depth = e.features[0].properties.depth; // Get the depth from the clicked feature
+            let popupContent = "";
+
+            if (depth === undefined || depth === null) {
+                popupContent = "Depth data not available";
+            } else if (depth >= 0) {
+                popupContent = "Land / Above water";
+            } else if (depth < -12) {
+                popupContent = `Depth: ${Math.abs(depth)} m (Deeper than 12m)`;
+            } else {
+                popupContent = `Depth: ${Math.abs(depth)} m`;
+            }
+
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat) // Position popup at click location
+                .setHTML(popupContent)
+                .addTo(map);
+        });
+
+        // Change the cursor to a pointer when hovering over the depth polygons.
+        map.on('mouseenter', 'gebco-depth-polygons', () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        // Change the cursor back to default when it leaves.
+        map.on('mouseleave', 'gebco-depth-polygons', () => {
+            map.getCanvas().style.cursor = '';
+        });
+    });
+</script>
+
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
 </body>
 </html>
