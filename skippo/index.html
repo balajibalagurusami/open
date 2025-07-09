@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Skippo-style Bathymetry Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <style>
+    html, body { margin: 0; height: 100%; font-family: sans-serif; }
+    #app { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+
+    .sidebar {
+      width: 80px;
+      background: #f8f9fa;
+      padding: 10px 0;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      margin: 10px 0;
+      cursor: pointer;
+      font-size: 12px;
+      text-align: center;
+      padding: 4px;
+      width: 100%;
+    }
+
+    .menu-btn.active {
+      font-weight: bold;
+      color: #002A42;
+    }
+
+    .map-container { flex-grow: 1; position: relative; }
+    .mapboxgl-map { width: 100%; height: 100%; }
+
+    .search-overlay {
+      position: absolute;
+      top: 20px;
+      left: 100px;
+      z-index: 10;
+    }
+
+    .search-overlay input {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 300px;
+    }
+
+    .control-buttons {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .control-buttons button {
+      padding: 10px;
+      border: none;
+      background: #002A42;
+      color: white;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="sidebar">
+    <button class="menu-btn active">Søg</button>
+    <button class="menu-btn">Gemte</button>
+    <button class="menu-btn">Opret rute</button>
+  </div>
+  <div class="map-container" id="map"></div>
+  <div class="search-overlay">
+    <input type="text" placeholder="Søg efter steder, havne og mere" />
+  </div>
+  <div class="control-buttons">
+    <button onclick="resetView()">⤾</button>
+    <button onclick="zoomIn()">+</button>
+    <button onclick="zoomOut()">−</button>
+  </div>
+</div>
+
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoiYmFsYWppY293aSIsImEiOiJjbWN2cTRyMXQwMTd3MmpwdjNpaDUzdWhwIn0.ykTEJuDI8r_tdUK0aRRStw';
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v11',
+    center: [12.655, 55.655],
+    zoom: 14
+  });
+
+  map.on('load', () => {
+    // Make land yellow
+    map.setPaintProperty('land', 'fill-color', '#ffff88');
+
+    // Load your GEBCO GeoJSON tile
+    map.addSource('gebco-depth', {
+      type: 'geojson',
+      data: 'gebco_depth_tile.geojson' // Make sure it's hosted or served correctly
+    });
+
+    // Generate fine color stops every 1m from -100 to +10
+    const colorSteps = [];
+    for (let d = -100; d <= 10; d++) {
+      // Gradient: shallow cyan to deep blue
+      const ratio = (d + 100) / 110;
+      const blue = Math.round(255 - 180 * ratio);
+      const green = Math.round(255 - 160 * ratio);
+      colorSteps.push(d, `rgb(0,${green},${blue})`);
+    }
+
+    map.addLayer({
+      id: 'gebco-fill',
+      type: 'fill',
+      source: 'gebco-depth',
+      paint: {
+        'fill-color': ['interpolate', ['linear'], ['get', 'depth'], ...colorSteps],
+        'fill-opacity': 0.75
+      }
+    });
+  });
+
+  function resetView() {
+    map.flyTo({ center: [12.655, 55.655], zoom: 14 });
+  }
+
+  function zoomIn() { map.zoomIn(); }
+  function zoomOut() { map.zoomOut(); }
+</script>
+</body>
+</html>
