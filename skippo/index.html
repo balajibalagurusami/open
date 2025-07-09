@@ -1,144 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Skippo-style Bathymetry Map</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
-  <style>
-    html, body { margin: 0; height: 100%; font-family: sans-serif; }
-    #app { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+    <title>Shallow Sea Depth Map (0m to 12m)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    .sidebar {
-      width: 80px;
-      background: #f8f9fa;
-      padding: 10px 0;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-    .menu-btn {
-      background: none;
-      border: none;
-      margin: 10px 0;
-      cursor: pointer;
-      font-size: 12px;
-      text-align: center;
-      padding: 4px;
-      width: 100%;
-    }
-
-    .menu-btn.active {
-      font-weight: bold;
-      color: #002A42;
-    }
-
-    .map-container { flex-grow: 1; position: relative; }
-    .mapboxgl-map { width: 100%; height: 100%; }
-
-    .search-overlay {
-      position: absolute;
-      top: 20px;
-      left: 100px;
-      z-index: 10;
-    }
-
-    .search-overlay input {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      width: 300px;
-    }
-
-    .control-buttons {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .control-buttons button {
-      padding: 10px;
-      border: none;
-      background: #002A42;
-      color: white;
-      border-radius: 50%;
-      font-size: 18px;
-      cursor: pointer;
-    }
-  </style>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent scrollbars if map is full screen */
+        }
+        #map {
+            height: 100vh; /* Make map take full viewport height */
+            width: 100vw;  /* Make map take full viewport width */
+        }
+    </style>
 </head>
 <body>
-<div id="app">
-  <div class="sidebar">
-    <button class="menu-btn active">Søg</button>
-    <button class="menu-btn">Gemte</button>
-    <button class="menu-btn">Opret rute</button>
-  </div>
-  <div class="map-container" id="map"></div>
-  <div class="search-overlay">
-    <input type="text" placeholder="Søg efter steder, havne og mere" />
-  </div>
-  <div class="control-buttons">
-    <button onclick="resetView()">⤾</button>
-    <button onclick="zoomIn()">+</button>
-    <button onclick="zoomOut()">−</button>
-  </div>
-</div>
+    <div id="map"></div>
 
-<script>
-  mapboxgl.accessToken = 'pk.eyJ1IjoiYmFsYWppY293aSIsImEiOiJjbWN2cTRyMXQwMTd3MmpwdjNpaDUzdWhwIn0.ykTEJuDI8r_tdUK0aRRStw';
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-  const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/light-v11',
-    center: [12.655, 55.655],
-    zoom: 14
-  });
+    <script>
+        // Initialize the map, centered at [0, 0] with zoom level 2 (global view)
+        // You can adjust the center coordinates and zoom level to focus on your area of interest.
+        // Example for Chennai, India (approximated): .setView([13.0827, 80.2707], 10);
+        var map = L.map('map').setView([0, 0], 2);
 
-  map.on('load', () => {
-    // Make land yellow
-    map.setPaintProperty('land', 'fill-color', '#ffff88');
+        // Add a base tile layer (OpenStreetMap in this case)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-    // Load your GEBCO GeoJSON tile
-    map.addSource('gebco-depth', {
-      type: 'geojson',
-      data: 'gebco_depth_tile.geojson' // Make sure it's hosted or served correctly
-    });
+        // Define the path to your GeoJSON file.
+        // When using VS Code's Live Server, this path is relative to the served directory.
+        // Since both index.html and gebco_depth_tile.geojson are in the same folder,
+        // just the filename is sufficient.
+        const geojsonFilePath = 'gebco_depth_tile.geojson';
 
-    // Generate fine color stops every 1m from -100 to +10
-    const colorSteps = [];
-    for (let d = -100; d <= 10; d++) {
-      // Gradient: shallow cyan to deep blue
-      const ratio = (d + 100) / 110;
-      const blue = Math.round(255 - 180 * ratio);
-      const green = Math.round(255 - 160 * ratio);
-      colorSteps.push(d, `rgb(0,${green},${blue})`);
-    }
+        // Fetch the GeoJSON data
+        fetch(geojsonFilePath)
+            .then(response => {
+                // Check if the network request was successful
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} - Could not load ${geojsonFilePath}. Ensure it's in the same folder as index.html and Live Server is running.`);
+                }
+                // Parse the JSON response
+                return response.json();
+            })
+            .then(data => {
+                console.log("GeoJSON data loaded:", data);
 
-    map.addLayer({
-      id: 'gebco-fill',
-      type: 'fill',
-      source: 'gebco-depth',
-      paint: {
-        'fill-color': ['interpolate', ['linear'], ['get', 'depth'], ...colorSteps],
-        'fill-opacity': 0.75
-      }
-    });
-  });
+                // Add the GeoJSON data to the map with custom styling and popups
+                L.geoJSON(data, {
+                    // Style function to color polygons based on 'depth' property
+                    style: function(feature) {
+                        const depth = feature.properties.depth; // Access the depth property
 
-  function resetView() {
-    map.flyTo({ center: [12.655, 55.655], zoom: 14 });
-  }
+                        let color;
+                        let fillOpacity = 0.8; // Default opacity for visible depths
+                        let weight = 0.5;      // Default border weight for polygons
+                        let borderColor = '#333'; // Darker border for contrast
 
-  function zoomIn() { map.zoomIn(); }
-  function zoomOut() { map.zoomOut(); }
-</script>
+                        // Define colors for the 0m to 12m range and handle other cases
+                        if (depth === undefined || depth === null) {
+                            color = '#CCCCCC'; // Light grey for features without a depth value
+                            fillOpacity = 0.5;
+                            borderColor = '#999';
+                        } else if (depth <= 0) { // Land or above water (assuming 0m is coastline)
+                            color = '#A0D6B4'; // Light green for land areas
+                            fillOpacity = 0.8;
+                        } else if (depth > 0 && depth <= 2) { // 0m to 2m deep
+                            color = '#ADD8E6'; // Light Blue
+                        } else if (depth > 2 && depth <= 4) { // 2m to 4m deep
+                            color = '#87CEEB'; // Sky Blue
+                        } else if (depth > 4 && depth <= 6) { // 4m to 6m deep
+                            color = '#6495ED'; // Cornflower Blue
+                        } else if (depth > 6 && depth <= 8) { // 6m to 8m deep
+                            color = '#4169E1'; // Royal Blue
+                        } else if (depth > 8 && depth <= 10) { // 8m to 10m deep
+                            color = '#1E90FF'; // Dodger Blue
+                        } else if (depth > 10 && depth <= 12) { // 10m to 12m deep
+                            color = '#0000CD'; // Medium Blue
+                        } else { // Depths greater than 12m (deeper water)
+                            color = '#00008B'; // Dark Blue for deeper water
+                            // To make deeper areas completely transparent, uncomment the lines below:
+                            // fillOpacity = 0;
+                            // weight = 0;
+                            // borderColor = 'transparent';
+                        }
+
+                        return {
+                            fillColor: color,
+                            color: borderColor,
+                            weight: weight,
+                            opacity: 0.7,      // Border opacity
+                            fillOpacity: fillOpacity
+                        };
+                    },
+                    // Function to bind a popup to each feature on click
+                    onEachFeature: function(feature, layer) {
+                        if (feature.properties && feature.properties.depth !== undefined) {
+                            const displayDepth = feature.properties.depth;
+                            let popupContent = "";
+
+                            if (displayDepth <= 0) {
+                                popupContent = "Land / Above water";
+                            } else if (displayDepth > 12) {
+                                popupContent = `Depth: ${displayDepth} m (Deeper than 12m)`;
+                            } else {
+                                popupContent = `Depth: ${displayDepth} m`;
+                            }
+                            layer.bindPopup(popupContent);
+                        }
+                    }
+                }).addTo(map);
+
+                // Optional: Adjust map view to fit the loaded GeoJSON data
+                // This will zoom and pan the map to show all the contours.
+                const bounds = L.geoJSON(data).getBounds();
+                if (bounds.isValid()) { // Check if bounds are valid (i.e., if there's actual data)
+                    map.fitBounds(bounds);
+                } else {
+                    console.warn("No valid bounds found for GeoJSON data. Map will not auto-zoom.");
+                }
+            })
+            .catch(error => {
+                // Log any errors that occur during the fetch operation
+                console.error('There was a problem fetching the GeoJSON file:', error);
+            });
+
+    </script>
 </body>
 </html>
