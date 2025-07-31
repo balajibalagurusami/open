@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Coin Flip Before Form</title>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <style>
+    body {
+      padding-top: 20px;
+      background: #F7F7F7;
+      perspective: 800px;
+      font-family: sans-serif;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    #coin {
+      position: relative;
+      margin: 0 auto 30px auto;
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      transition: transform 1s ease-in;
+      transform-style: preserve-3d;
+    }
+
+    #coin div {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: inset 0 0 45px rgba(255,255,255,.3), 0 12px 20px -10px rgba(0,0,0,.4);
+      position: absolute;
+      backface-visibility: hidden;
+    }
+
+    .side-a {
+      background-color: #bb0000;
+      z-index: 100;
+    }
+
+    .side-b {
+      background-color: #3e3e3e;
+      transform: rotateY(-180deg);
+    }
+
+    #coin.heads {
+      animation: flipHeads 3s ease-out forwards;
+    }
+
+    #coin.tails {
+      animation: flipTails 3s ease-out forwards;
+    }
+
+    @keyframes flipHeads {
+      from { transform: rotateY(0); }
+      to { transform: rotateY(1800deg); }
+    }
+
+    @keyframes flipTails {
+      from { transform: rotateY(0); }
+      to { transform: rotateY(1980deg); }
+    }
+
+    form {
+      background: #fff;
+      display: inline-block;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label, input {
+      display: block;
+      margin: 10px 0;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 250px;
+      padding: 8px;
+    }
+
+    input[type="submit"] {
+      padding: 10px 20px;
+      background: #3e3e3e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+      background: #bb0000;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Flip the Coin Before Submitting the Form</h1>
+
+  <!-- Coin Animation -->
+  <div id="coin">
+    <div class="side-a"></div>
+    <div class="side-b"></div>
+  </div>
+
+  <!-- Basic Form -->
+  <form action="/submit" method="post">
+    <label for="name">Your Name:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="email">Email Address:</label>
+    <input type="email" id="email" name="email" required>
+
+    <input type="submit" value="Submit">
+  </form>
+
+  <script>
+    jQuery(document).ready(function($){
+      $('#coin').on('click', function(){
+        const flipResult = Math.random();
+        $('#coin').removeClass('heads tails');
+        setTimeout(function(){
+          if(flipResult <= 0.5){
+            $('#coin').addClass('heads');
+            console.log('it is head');
+          } else {
+            $('#coin').addClass('tails');
+            console.log('it is tails');
+          }
+        }, 100);
+      });
+    });
+  </script>
+
+</body>
+</html>
