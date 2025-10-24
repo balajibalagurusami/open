@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recurring Deposit (RD) Calculator - No ROI Cap</title>
+  <style>
+    :root {
+      --bg: #0f172a; /* slate-900 */
+      --panel: #111827; /* gray-900 */
+      --muted: #9ca3af; /* gray-400 */
+      --text: #e5e7eb; /* gray-200 */
+      --accent: #f97316; /* orange-500 */
+      --good: #22c55e; /* green-500 */
+      --bad: #ef4444;  /* red-500 */
+      --ring: rgba(249,115,22,.35);
+      --border: #1f2937; /* gray-800 */
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans,
+      Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: linear-gradient(160deg, #0b1021, #0f172a 45%, #111827);
+      color: var(--text);
+    }
+    .wrap { max-width: 1100px; margin: 32px auto; padding: 24px; }
+    header { display:flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    h1 { font-size: clamp(22px, 2.4vw, 36px); margin: 0; letter-spacing: 0.2px; }
+    .badge { font-size: 12px; padding: 6px 10px; border-radius: 999px; background: #1f2937; color: #9ca3af; border: 1px solid var(--border); }
+
+    .grid { display:grid; grid-template-columns: 1.1fr 1fr; gap: 18px; }
+    @media (max-width: 900px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card { background: #0b1223; border: 1px solid var(--border); border-radius: 16px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .card h2 { margin: 0 0 12px; font-size: 18px; color: #f3f4f6; }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row3 { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .mt8 { margin-top: 8px; } .mt12{ margin-top:12px;} .mt16{ margin-top:16px;} .mt20{ margin-top:20px; }
+
+    label { font-size: 13px; color: #cbd5e1; display:block; margin: 6px 0; }
+    .hint { font-size: 12px; color: var(--muted); }
+
+    input, select { width: 100%; background: #0a0f1e; color: var(--text); border: 1px solid var(--border); padding: 10px 12px; border-radius: 10px; outline: none; }
+    input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--ring); }
+    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+    .btns { display:flex; gap: 10px; flex-wrap: wrap; }
+    button { background: var(--accent); color: #0b0f1d; border: none; padding: 10px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    button.secondary { background:#18212f; color:#e5e7eb; border:1px solid var(--border); }
+    button.ghost { background: transparent; color:#cbd5e1; border:1px dashed var(--border); }
+
+    .stats { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .stat { background:#0a0f1e; border:1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .stat span { display:block; font-size:12px; color: var(--muted); }
+    .stat b { font-size: 20px; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+    th, td { text-align: right; padding: 10px; border-bottom: 1px solid var(--border); }
+    th:first-child, td:first-child { text-align: left; }
+    thead th { position: sticky; top: 0; background: #0b1223; z-index: 1; }
+
+    .warn { color: var(--bad); font-size: 12px; }
+    .ok { color: var(--good); font-size: 12px; }
+    footer { margin-top: 16px; color: var(--muted); font-size: 12px; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius:999px; border:1px solid var(--border); background:#0a0f1e; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Recurring Deposit (RD) Calculator <span class="badge">No cap on Interest Rate</span></h1>
+      <div class="pill">Units: ₹ by default (works for any currency)</div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Inputs</h2>
+        <div class="row">
+          <div>
+            <label>Monthly deposit</label>
+            <input id="monthly" type="number" step="0.01" min="0" placeholder="e.g., 1000" />
+            <div class="hint">Amount you add every month</div>
+          </div>
+          <div>
+            <label>Tenure</label>
+            <div class="row">
+              <input id="tenureMonths" type="number" step="1" min="1" placeholder="Months (e.g., 24)" />
+              <input id="tenureYears" type="number" step="1" min="0" placeholder="Years (optional)" />
+            </div>
+            <div class="hint">You can fill months, years, or both</div>
+          </div>
+        </div>
+
+        <div class="row mt12">
+          <div>
+            <label>Annual interest rate (% p.a.)</label>
+            <input id="rate" type="number" step="0.0001" placeholder="e.g., 7.2" />
+            <div class="hint">No maximum enforced. Use any number, positive or negative.</div>
+          </div>
+          <div>
+            <label>Compounding frequency</label>
+            <select id="comp">
+              <option value="12">Monthly (12)</option>
+              <option value="4" selected>Quarterly (4)</option>
+              <option value="2">Half-yearly (2)</option>
+              <option value="1">Yearly (1)</option>
+            </select>
+            <div class="hint">Indian RDs usually compound quarterly. Change if needed.</div>
+          </div>
+        </div>
+
+        <div class="row mt12">
+          <div>
+            <label>Deposit timing</label>
+            <select id="timing">
+              <option value="start" selected>Start of each month</option>
+              <option value="end">End of each month</option>
+            </select>
+          </div>
+          <div>
+            <label>Schedule rows</label>
+            <select id="rows">
+              <option value="all" selected>Show all months</option>
+              <option value="quarters">Only compounding months</option>
+              <option value="none">Hide schedule</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btns mt16">
+          <button id="calc">Calculate</button>
+          <button id="reset" class="secondary">Reset</button>
+          <button id="export" class="ghost">Export CSV</button>
+        </div>
+
+        <div id="msg" class="mt12 hint"></div>
+      </section>
+
+      <section class="card">
+        <h2>Results</h2>
+        <div class="stats">
+          <div class="stat"><span>Total deposit</span><b id="totalDeposit">₹0</b></div>
+          <div class="stat"><span>Interest earned</span><b id="interestEarned">₹0</b></div>
+          <div class="stat"><span>Maturity amount</span><b id="maturity">₹0</b></div>
+        </div>
+        <div class="mt12 hint">Method: month-by-month simulation, posting interest at your chosen compounding frequency. Partial periods at the end are pro-rated using fractional compounding.</div>
+      </section>
+    </div>
+
+    <section id="scheduleCard" class="card mt16" style="display:none;">
+      <h2>Amortization Schedule</h2>
+      <div class="hint">Shows deposits and interest added whenever compounding occurs.</div>
+      <div style="max-height: 380px; overflow: auto; border:1px solid var(--border); border-radius: 12px;">
+        <table id="schedule">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Event</th>
+              <th>Deposit</th>
+              <th>Interest added</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <footer class="mt12">CSV export includes every row, even hidden ones.</footer>
+    </section>
+
+    <footer>
+      <p><strong>No ROI cap</strong>: This tool lets you test extreme rates for what-if scenarios. Reality check - banks rarely offer very high annual rates, and negative rates imply capital erosion. Your call.</p>
+    </footer>
+  </div>
+
+  <script>
+    const el = id => document.getElementById(id);
+    const fmt = n => {
+      if (!isFinite(n)) return '—';
+      return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(n);
+    };
+
+    function calcRD({monthly, months, ratePA, compPerYear, timing}){
+      // Month-by-month simulation with interest posted at comp boundaries.
+      // Partial last period is compounded fractionally.
+      const rows = [];
+      const monthsPerComp = 12 / compPerYear; // e.g., 3 months for quarterly
+      const r = ratePA / 100;
+      let balance = 0;
+      let totalDeposit = 0;
+      let monthIndex = 0; // 0-based
+
+      const pushRow = (idx, event, dep, intAdded, bal) => rows.push({ index: idx, event, deposit: dep, interest: intAdded, balance: bal });
+
+      const applyInterest = (periods) => {
+        if (periods <= 0) return 0;
+        const before = balance;
+        balance *= Math.pow(1 + r / compPerYear, periods);
+        const added = balance - before;
+        return added;
+      };
+
+      let monthsSinceComp = 0;
+
+      for (let m = 1; m <= months; m++){
+        monthIndex++;
+        // Deposit either at start or end
+        if (timing === 'start'){
+          balance += monthly; totalDeposit += monthly; pushRow(monthIndex, 'Deposit (start)', monthly, 0, balance);
+        }
+
+        monthsSinceComp += 1;
+        if (monthsSinceComp >= monthsPerComp - 1e-9){
+          const added = applyInterest(1); // one full comp period
+          monthsSinceComp = 0;
+          pushRow(monthIndex, 'Interest posted', 0, added, balance);
+        }
+
+        if (timing === 'end'){
+          balance += monthly; totalDeposit += monthly; pushRow(monthIndex, 'Deposit (end)', monthly, 0, balance);
+        }
+      }
+
+      // If tenure ends mid-compounding period, pro-rate remaining fraction
+      if (monthsSinceComp > 0){
+        const fraction = monthsSinceComp / monthsPerComp;
+        const added = applyInterest(fraction);
+        pushRow(monthIndex, `Interest posted (partial ${fraction.toFixed(4)} of period)`, 0, added, balance);
+      }
+
+      const interestEarned = balance - totalDeposit;
+      return { maturity: balance, totalDeposit, interestEarned, rows };
+    }
+
+    function scheduleToCSV(rows){
+      const header = ['#','Event','Deposit','Interest','Balance'];
+      const lines = [header.join(',')];
+      for (const r of rows){
+        lines.push([r.index, r.event, r.deposit.toFixed(2), r.interest.toFixed(2), r.balance.toFixed(2)].join(','));
+      }
+      return lines.join('\n');
+    }
+
+    function renderRows(rows, mode, compPerYear){
+      const tbody = el('schedule').querySelector('tbody');
+      tbody.innerHTML = '';
+      const monthsPerComp = 12 / compPerYear;
+      for (const r of rows){
+        const show = mode === 'all' || (mode === 'quarters' && (r.event.startsWith('Interest posted')));
+        if (!show) continue;
+        const tr = document.createElement('tr');
+        const td = (x)=>{ const c=document.createElement('td'); c.textContent = x; return c; };
+        tr.appendChild(td(r.index));
+        tr.appendChild(td(r.event));
+        tr.appendChild(td(fmt(r.deposit).replace(/^INR\s?/, '₹')));
+        tr.appendChild(td((r.interest>=0?'+':'') + fmt(r.interest).replace(/^INR\s?/, '₹')));
+        tr.appendChild(td(fmt(r.balance).replace(/^INR\s?/, '₹')));
+        tbody.appendChild(tr);
+      }
+    }
+
+    function parseTenure(){
+      const m = Number(el('tenureMonths').value || 0);
+      const y = Number(el('tenureYears').value || 0);
+      const months = m + (y * 12);
+      return Math.max(0, Math.floor(months));
+    }
+
+    function resetAll(){
+      el('monthly').value = '';
+      el('tenureMonths').value = '';
+      el('tenureYears').value = '';
+      el('rate').value = '';
+      el('comp').value = '4';
+      el('timing').value = 'start';
+      el('rows').value = 'all';
+      el('totalDeposit').textContent = '₹0';
+      el('interestEarned').textContent = '₹0';
+      el('maturity').textContent = '₹0';
+      el('msg').textContent = '';
+      el('scheduleCard').style.display = 'none';
+      el('schedule').querySelector('tbody').innerHTML = '';
+    }
+
+    // Events
+    el('reset').addEventListener('click', resetAll);
+
+    el('calc').addEventListener('click', () => {
+      const monthly = Number(el('monthly').value);
+      const months = parseTenure();
+      const ratePA = Number(el('rate').value);
+      const compPerYear = Number(el('comp').value);
+      const timing = el('timing').value;
+      const rowMode = el('rows').value;
+
+      // Basic checks (no artificial caps)
+      let msg = [];
+      if (!(monthly > 0)) msg.push('Enter a positive monthly deposit.');
+      if (!(months > 0)) msg.push('Enter a positive tenure in months or years.');
+      if (!isFinite(ratePA)) msg.push('Enter a numeric annual interest rate (can be any number).');
+      if (!(compPerYear === 1 || compPerYear === 2 || compPerYear === 4 || compPerYear === 12)) msg.push('Compounding must be 1, 2, 4, or 12 per year.');
+
+      // Hard reality warnings, not caps
+      if (Math.abs(ratePA) > 100) msg.push('Heads-up: |Rate| > 100% p.a. - this is probably unrealistic.');
+      if (ratePA < 0) msg.push('Negative rate: your principal will shrink over time.');
+
+      el('msg').innerHTML = msg.length ? '<span class="warn">' + msg.join(' ') + '</span>' : '<span class="ok">Ready.</span>';
+      if (msg.some(s => s.startsWith('Enter'))) return; // block only missing/invalid inputs
+
+      const { maturity, totalDeposit, interestEarned, rows } = calcRD({ monthly, months, ratePA, compPerYear, timing });
+      el('totalDeposit').textContent = fmt(totalDeposit).replace(/^INR\s?/, '₹');
+      el('interestEarned').textContent = fmt(interestEarned).replace(/^INR\s?/, '₹');
+      el('maturity').textContent = fmt(maturity).replace(/^INR\s?/, '₹');
+
+      if (rowMode !== 'none'){
+        el('scheduleCard').style.display = '';
+        renderRows(rows, rowMode, compPerYear);
+      } else {
+        el('scheduleCard').style.display = 'none';
+      }
+
+      // stash rows for export
+      window.__rd_rows = rows;
+    });
+
+    el('export').addEventListener('click', ()=>{
+      const rows = window.__rd_rows || [];
+      if (!rows.length){
+        el('msg').innerHTML = '<span class="warn">Calculate first to generate a schedule.</span>';
+        return;
+      }
+      const csv = scheduleToCSV(rows);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'rd_schedule.csv'; a.click();
+      setTimeout(()=>URL.revokeObjectURL(url), 1500);
+    });
+
+    // Defaults for quick demo
+    el('monthly').value = 5000;
+    el('tenureMonths').value = 24;
+    el('rate').value = 7.2;
+  </script>
+</body>
+</html>
