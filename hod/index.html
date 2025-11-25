@@ -3,12 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>CTC & Take-Home Calculator</title>
-<style>
-  body { font-family: Arial; max-width: 600px; margin: 20px auto; }
-  input { width: 100%; padding: 8px; margin: 5px 0; }
-  button { padding: 10px; width: 100%; margin-top: 10px; }
-  .box { border: 1px solid #ccc; padding: 15px; margin-top: 20px; }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -34,73 +29,6 @@
 
 <div class="box" id="result"></div>
 
-<script>
-function taxNewRegime2025(income) {
-    let tax = 0;
-    let slabs = [
-        [0, 400000, 0],
-        [400000, 800000, 0.05],
-        [800000, 1200000, 0.10],
-        [1200000, 1600000, 0.15],
-        [1600000, 2000000, 0.20],
-        [2000000, Infinity, 0.30]
-    ];
-    for (let s of slabs) {
-        let [low, high, rate] = s;
-        if (income > low) {
-            let taxable = Math.min(income, high) - low;
-            tax += taxable * rate;
-        }
-    }
-    return tax;
-}
-
-function calc() {
-    // Always read from DOM explicitly - do NOT reuse id names
-    const currentCTC = Number(document.getElementById("ctc").value || 0);
-    const hikePct    = Number(document.getElementById("hike").value || 0);
-
-    if (!currentCTC) {
-        document.getElementById("result").innerHTML = "<b>Enter a valid Current CTC.</b>";
-        return;
-    }
-
-    const newCTC       = currentCTC * (1 + hikePct / 100);
-    const gainAnnual   = newCTC - currentCTC;
-    const gainMonthly  = gainAnnual / 12;
-
-    const tax          = taxNewRegime2025(newCTC);
-    const takeHomeAnnual  = newCTC - tax;
-    const takeHomeMonthly = takeHomeAnnual / 12;
-
-    const rent        = Number(document.getElementById("rent").value || 0);
-    const food        = Number(document.getElementById("food").value || 0);
-    const air         = Number(document.getElementById("air").value || 0);
-    const commute     = Number(document.getElementById("commute").value || 0);
-    const electricity = Number(document.getElementById("electricity").value || 0);
-    const internet    = Number(document.getElementById("internet").value || 0);
-    const emi         = Number(document.getElementById("emi").value || 0);
-
-    const expenses = rent + food + air + commute + electricity + internet + emi;
-    const savings  = takeHomeMonthly - expenses;
-
-    document.getElementById("result").innerHTML = `
-        <h3>Results</h3>
-        <b>Current CTC (Annual):</b> ₹${currentCTC.toLocaleString()} <br>
-        <b>New CTC (Annual):</b> ₹${newCTC.toLocaleString()} <br>
-        <b>Annual Gain:</b> ₹${gainAnnual.toLocaleString()} <br>
-        <b>Monthly Gain:</b> ₹${gainMonthly.toLocaleString()} <br><br>
-
-        <b>Income Tax (Annual):</b> ₹${tax.toLocaleString()} <br>
-        <b>Take-Home (Annual):</b> ₹${takeHomeAnnual.toLocaleString()} <br>
-        <b>Take-Home (Monthly):</b> ₹${takeHomeMonthly.toLocaleString()} <br><br>
-
-        <b>Total Monthly Expenses:</b> ₹${expenses.toLocaleString()} <br>
-        <b>Monthly Savings:</b> <span style="color:${savings>=0 ? "green" : "red"}">
-            ₹${savings.toLocaleString()}
-        </span>
-    `;
-}
-</script>
+<script src="calc.js"></script>
 </body>
 </html>
