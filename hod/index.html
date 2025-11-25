@@ -1,400 +1,94 @@
-<!doctype html>
-
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>3 Months in Gurgaon, 1 Month in Chennai – Cost Visualizer</title>
-  <style>
-    :root{
-      --bg:#0b1020; --fg:#f3f6ff; --muted:#9aa4bf; --card:#121935; --accent:#6aa3ff; --accent-2:#7ef7cf;
-      --danger:#ff7a7a; --ok:#9ef27a; --border:rgba(255,255,255,.08);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 600px at 80% -10%,rgba(106,163,255,.2),transparent),linear-gradient(180deg,#0b1020,#0b1020 60%,#0a0f1c);color:var(--fg)}
-    .wrap{max-width:1100px;margin:0 auto;padding:28px}
-    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:18px}
-    h1{font-size:clamp(22px,2.4vw,28px);margin:0;font-weight:700;letter-spacing:.2px}
-    .tag{font-size:12px;color:var(--muted);border:1px dashed var(--border);padding:6px 10px;border-radius:999px}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
-@media (max-width:900px){.grid{grid-template-columns:1fr;}}
-
-.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.03);padding:18px}
-.card h2{margin:2px 0 12px;font-size:16px;font-weight:700;color:#e8eeff}
-
-.row{display:grid;grid-template-columns:1fr 200px;gap:10px;align-items:center;margin:10px 0}
-.row label{color:var(--muted);font-size:13px}
-.row input{appearance:none;width:100%;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--fg);border-radius:12px;padding:10px 12px;font-size:14px;outline:none}
-.row input:focus{border-color:var(--accent)}
-
-.hint{font-size:12px;color:var(--muted);margin-top:6px}
-
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:10px}
-@media (max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
-.kpi{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));border:1px solid var(--border);border-radius:16px;padding:14px}
-.kpi .k{font-size:12px;color:var(--muted)}
-.kpi .v{font-size:20px;font-weight:800;margin-top:4px}
-
-.flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.pill{padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted);font-size:12px}
-
-.chart-card{padding:0;overflow:hidden}
-.chart-head{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 0}
-.chart-legend{display:flex;gap:10px}
-.legend{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
-.legend .dot{width:10px;height:10px;border-radius:2px;background:var(--accent)}
-
-canvas{display:block;width:100%;height:320px}
-
-footer{margin-top:16px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.btn{appearance:none;border:none;background:linear-gradient(180deg,var(--accent),#4c8fff);color:#0a1022;font-weight:800;padding:10px 14px;border-radius:12px;cursor:pointer}
-.btn:active{transform:translateY(1px)}
-
-  </style>
+<meta charset="UTF-8">
+<title>CTC & Take-Home Calculator</title>
+<style>
+  body { font-family: Arial; max-width: 600px; margin: 20px auto; }
+  input { width: 100%; padding: 8px; margin: 5px 0; }
+  button { padding: 10px; width: 100%; margin-top: 10px; }
+  .box { border: 1px solid #ccc; padding: 15px; margin-top: 20px; }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>3 Months in Gurgaon, 1 Month in Chennai – Cost Visualizer</h1>
-      <span class="tag">Assumptions: ₹8,000 per flight (one‑way), Gurgaon rent + food as entered</span>
-    </header><div class="grid">
-  <!-- Inputs -->
-  <section class="card" aria-labelledby="inputs">
-    <h2 id="inputs">Inputs</h2>
-    <div class="row">
-      <label for="currNet">Current monthly in-hand (Chennai)</label>
-      <input id="currNet" type="number" min="0" step="1000" value="150000" />
-    </div>
-    <div class="row">
-      <label for="newNet">Expected monthly in-hand after HoS</label>
-      <input id="newNet" type="number" min="0" step="1000" value="270000" />
-    </div>
-    <div class="row">
-      <label for="flight">Flight cost (one‑way)</label>
-      <input id="flight" type="number" min="0" step="500" value="8000" />
-    </div>
-    <div class="row">
-      <label for="rent">Gurgaon rent (per month)</label>
-      <input id="rent" type="number" min="0" step="1000" value="16000" />
-    </div>
-    <div class="row">
-      <label for="food">Gurgaon food & other (per month)</label>
-      <input id="food" type="number" min="0" step="1000" value="10000" />
-    </div>
-    <div class="row">
-      <label for="keep">Keep Gurgaon flat full year?</label>
-      <input id="keep" type="checkbox" checked />
-    </div>
-    <div class="row">
-      <label for="emi">Chennai fixeds in Chennai month (optional)</label>
-      <input id="emi" type="number" min="0" step="1000" value="0" />
-    </div>
-    <div class="hint">Cycle = 4 months: 3 months in Gurgaon, 1 month in Chennai. Flights per cycle assumed = 2 one‑way legs (to Gurgaon and back). Annualized burn in KPIs is for the base model (no rent in Chennai month) to keep tests stable.</div>
-    <div style="margin-top:12px" class="flex">
-      <button class="btn" id="recalc">Recalculate</button>
-      <span class="pill">All values in ₹</span>
-      <span class="pill">New Tax Regime unaffected – this is pure outflow</span>
-    </div>
 
-    <div class="kpis" id="kpis"></div>
-  </section>
+<h2>CTC & Take-Home Calculator (India New Regime 2025)</h2>
 
-  <!-- Pie Chart: Spend Mix (base model) -->
-  <section class="card chart-card" aria-labelledby="chartPie">
-    <div class="chart-head">
-      <h2 id="chartPie" style="margin:0 0 8px">Spend Split per 4‑Month Cycle</h2>
-      <div class="chart-legend">
-        <span class="legend"><span class="dot"></span> Rent</span>
-        <span class="legend"><span class="dot" style="background:var(--accent-2)"></span> Food</span>
-        <span class="legend"><span class="dot" style="background:#ffa3a3"></span> Flights</span>
-        <span class="legend"><span class="dot" style="background:#c7c7ff"></span> Chennai fixed</span>
-      </div>
-    </div>
-    <canvas id="pie"></canvas>
-  </section>
+<h3>Income Details</h3>
+<label>Current CTC (Annual)</label>
+<input id="ctc" type="number">
 
-  <!-- Chart -->
-  <section class="card chart-card" aria-labelledby="chart">
-    <div class="chart-head">
-      <h2 id="chart" style="margin:0 0 8px">Cost per 4‑Month Cycle</h2>
-      <div class="chart-legend">
-        <span class="legend"><span class="dot"></span> Cycle total</span>
-        <span class="legend"><span class="dot" style="background:var(--accent-2)"></span> Monthly avg</span>
-      </div>
-    </div>
-    <canvas id="bar"></canvas>
-  </section>
+<label>Expected Hike (%)</label>
+<input id="hike" type="number" value="0">
 
-  <section class="card chart-card" aria-labelledby="chart2">
-    <div class="chart-head">
-      <h2 id="chart2" style="margin:0 0 8px">Annual Gain vs Burn</h2>
-      <div class="chart-legend">
-        <span class="legend"><span class="dot"></span> Annual burn</span>
-        <span class="legend"><span class="dot" style="background:var(--accent-2)"></span> Annual gain (salary delta)</span>
-      </div>
-    </div>
-    <canvas id="bar2"></canvas>
-  </section>
-</div>
+<h3>Monthly Expenses</h3>
+<label>Rent</label><input id="rent" type="number">
+<label>Food</label><input id="food" type="number">
+<label>Air Travel</label><input id="air" type="number">
+<label>Daily Commute</label><input id="commute" type="number">
+<label>Electricity</label><input id="electricity" type="number">
+<label>Internet</label><input id="internet" type="number">
+<label>EMI</label><input id="emi" type="number">
 
-<section class="card" style="margin-top:18px" aria-labelledby="breakdown">
-  <h2 id="breakdown">Detailed Breakdown</h2>
-  <div id="table" class="hint"></div>
-</section>
+<button onclick="calc()">Calculate</button>
 
-<footer>
-  <div>Tip: If you choose a ₹25k "T‑block" rent, just overwrite the rent field. The visuals update instantly.</div>
-  <div>Made for Balaji – straightforward, no fluff.</div>
-</footer>
+<div class="box" id="result"></div>
 
-  </div>  <script>
-    const fmt = n => n.toLocaleString('en-IN');
-
-    function compute(){
-      const currNet = +document.getElementById('currNet').value || 0;
-      const newNet  = +document.getElementById('newNet').value  || 0;
-      const flight = +document.getElementById('flight').value || 0;
-      const rent = +document.getElementById('rent').value || 0;
-      const food = +document.getElementById('food').value || 0;
-      const emi = +document.getElementById('emi').value || 0;
-
-      // Base 4‑month cycle model for KPIs and base charts (kept to match tests):
-      const flightsPerCycle = 2; // one to GGN, one back to MAA
-      const flightCost = flight * flightsPerCycle;
-      const ggnMonthly = rent + food; // monthly burn while in Gurgaon
-      const ggn3 = ggnMonthly * 3;    // 3 months in Gurgaon
-      const chn1 = emi;               // Chennai month fixeds (no rent in base model)
-
-      const cycleTotal = ggn3 + flightCost + chn1;
-      const monthlyAvg = cycleTotal / 4;
-
-      // Annualized comparisons
-      const annualBurn = cycleTotal * 3; // 12 months ~ 3 cycles
-      const monthlyDelta = Math.max(newNet - currNet, 0);
-      const annualGain = monthlyDelta * 12;
-      const netAfterBurn = annualGain - annualBurn;
-
-      return {currNet,newNet,flight,rent,food,emi,flightsPerCycle,flightCost,ggnMonthly,ggn3,chn1,cycleTotal,monthlyAvg,annualBurn,annualGain,netAfterBurn,monthlyDelta};
-    }
-
-    function paintKPIs(m){
-      const el = document.getElementById('kpis');
-      el.innerHTML = `
-        <div class="kpi"><div class="k">Gurgaon monthly burn</div><div class="v">₹ ${fmt(m.ggnMonthly)}</div></div>
-        <div class="kpi"><div class="k">Flights per cycle</div><div class="v">${m.flightsPerCycle} × ₹ ${fmt(m.flight)} = ₹ ${fmt(m.flightCost)}</div></div>
-        <div class="kpi"><div class="k">Cycle total (4 months)</div><div class="v">₹ ${fmt(m.cycleTotal)}</div></div>
-        <div class="kpi"><div class="k">Monthly average</div><div class="v">₹ ${fmt(m.monthlyAvg)}</div></div>
-        <div class="kpi"><div class="k">Monthly salary delta</div><div class="v">₹ ${fmt(m.monthlyDelta)}</div></div>
-        <div class="kpi"><div class="k">Annual gain (delta × 12)</div><div class="v">₹ ${fmt(m.annualGain)}</div></div>
-        <div class="kpi"><div class="k">Annual burn (3 cycles)</div><div class="v">₹ ${fmt(m.annualBurn)}</div></div>
-        <div class="kpi"><div class="k">Net after burn (gain - burn)</div><div class="v" style="color:${m.netAfterBurn>=0?'var(--ok)':'var(--danger)'}">₹ ${fmt(m.netAfterBurn)}</div></div>
-      `;
-    }
-
-    // Month matrix with toggle for keeping the flat in Chennai months
-    function paintTable(m){
-      const el = document.getElementById('table');
-      const keep = document.getElementById('keep').checked; // UI toggle
-      const names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-      const months = Array.from({length:12}, (_, i) => {
-        const pos = i % 4; // 0,1,2 = Gurgaon; 3 = Chennai
-        if(pos === 3){
-          // Chennai month: if keeping flat, pay rent; always EMI; return flight
-          const rentInChn = keep ? m.rent : 0;
-          return { name: names[i], spend: rentInChn + m.emi + m.flight };
-        } else {
-          // Gurgaon month: rent + food; outbound flight only on first month of cycle
-          const outFlight = pos === 0 ? m.flight : 0;
-          return { name: names[i], spend: m.rent + m.food + outFlight };
+<script>
+function taxNewRegime2025(income) {
+    let tax = 0;
+    let slabs = [
+        [0, 400000, 0],
+        [400000, 800000, 0.05],
+        [800000, 1200000, 0.10],
+        [1200000, 1600000, 0.15],
+        [1600000, 2000000, 0.20],
+        [2000000, Infinity, 0.30]
+    ];
+    for (let s of slabs) {
+        let [low, high, rate] = s;
+        if (income > low) {
+            let taxable = Math.min(income, high) - low;
+            tax += taxable * rate;
         }
-      });
-
-      const salary = m.newNet; // HoS take-home used for salary row
-      const nets = months.map(x => salary - x.spend);
-
-      el.innerHTML = `
-        <div style="overflow-x:auto">
-          <table style="width:100%;border-collapse:collapse;font-size:13px">
-            <thead>
-              <tr style="background:rgba(255,255,255,.05)">
-                <th style="padding:8px;border-bottom:1px solid var(--border);text-align:left">Month</th>
-                ${months.map(mo => `<th style=\"padding:8px;border-bottom:1px solid var(--border);text-align:right\">${mo.name}</th>`).join('')}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="padding:8px;border-bottom:1px solid var(--border);text-align:left">Salary</td>
-                ${months.map(() => `<td style=\"padding:8px;border-bottom:1px solid var(--border);text-align:right\">₹ ${fmt(salary)}</td>`).join('')}
-              </tr>
-              <tr>
-                <td style="padding:8px;border-bottom:1px solid var(--border);text-align:left">Spend</td>
-                ${months.map(mo => `<td style=\"padding:8px;border-bottom:1px solid var(--border);text-align:right\">₹ ${fmt(Math.round(mo.spend))}</td>`).join('')}
-              </tr>
-              <tr>
-                <td style="padding:8px;border-bottom:1px solid var(--border);text-align:left">Net</td>
-                ${nets.map(n => `<td style=\"padding:8px;border-bottom:1px solid var(--border);text-align:right;color:${n>=0?'var(--ok)':'var(--danger)'}\">₹ ${fmt(Math.round(n))}</td>`).join('')}
-              </tr>
-              <tr>
-                <td style="padding:8px;border-top:1px dashed var(--border);text-align:left"><strong>Total net</strong></td>
-                <td colspan="12" style="padding:8px;border-top:1px dashed var(--border);text-align:right"><strong>₹ ${fmt(Math.round(nets.reduce((a,b)=>a+b,0)))}</strong></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>`;
     }
+    return tax;
+}
 
-    // Simple bar charts (base model)
-    function paintChart(m){
-      const c = document.getElementById('bar');
-      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      const W = c.clientWidth, H = 320;
-      c.width = W * dpr; c.height = H * dpr; const ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
+function calc() {
+    let ctc = Number(ctc.value);
+    let hike = Number(hike.value);
 
-      const vals = [m.cycleTotal, m.monthlyAvg];
-      const labels = ["4‑month total", "Monthly avg"];
-      const colors = [getComputedStyle(document.documentElement).getPropertyValue('--accent'), getComputedStyle(document.documentElement).getPropertyValue('--accent-2')];
+    let newCTC = ctc * (1 + hike/100);
+    let tax = taxNewRegime2025(newCTC);
+    let takeHomeAnnual = newCTC - tax;
+    let takeHomeMonthly = takeHomeAnnual / 12;
 
-      const pad = 24, bw = 120, gap = 60;
-      const maxV = Math.max(...vals) * 1.2;
-      const chartW = (bw * vals.length) + (gap * (vals.length - 1));
-      const ox = (W - chartW) / 2; const oy = H - 48;
+    let expenses =
+        Number(rent.value) +
+        Number(food.value) +
+        Number(air.value) +
+        Number(commute.value) +
+        Number(electricity.value) +
+        Number(internet.value) +
+        Number(emi.value);
 
-      ctx.strokeStyle = 'rgba(255,255,255,.12)';
-      ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, oy+.5); ctx.lineTo(W-pad, oy+.5); ctx.stroke();
+    let savings = takeHomeMonthly - expenses;
 
-      ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.font = '12px Inter, system-ui, sans-serif';
-      for(let i=0;i<=4;i++){
-        const yv = (maxV/4)*i; const y = oy - (yv/maxV)*(H-96);
-        ctx.fillText('₹ '+fmt(Math.round(yv)), 8, y+4);
-        ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.beginPath(); ctx.moveTo(pad, y+.5); ctx.lineTo(W-pad, y+.5); ctx.stroke();
-      }
+    document.getElementById("result").innerHTML = `
+        <h3>Results</h3>
+        <b>New CTC (Annual):</b> ₹${newCTC.toLocaleString()} <br>
+        <b>Income Tax (Annual):</b> ₹${tax.toLocaleString()} <br>
+        <b>Take-Home (Annual):</b> ₹${takeHomeAnnual.toLocaleString()} <br>
+        <b>Take-Home (Monthly):</b> ₹${takeHomeMonthly.toLocaleString()} <br><br>
 
-      vals.forEach((v, i)=>{
-        const x = ox + i*(bw+gap);
-        const h = (v/maxV)*(H-96);
-        ctx.fillStyle = colors[i];
-        const y = oy - h; const r = 10;
-        roundRect(ctx, x, y, bw, h, r); ctx.fill();
-        ctx.fillStyle = '#e8eeff'; ctx.textAlign = 'center';
-        ctx.font = '12px Inter, system-ui, sans-serif';
-        ctx.fillText(labels[i], x + bw/2, oy + 18);
-        ctx.font = 'bold 14px Inter, system-ui, sans-serif';
-        ctx.fillText('₹ '+fmt(Math.round(v)), x + bw/2, y - 10);
-      })
-    }
+        <b>Total Monthly Expenses:</b> ₹${expenses.toLocaleString()} <br>
+        <b>Monthly Savings:</b> <span style="color:${savings>=0?"green":"red"}">
+            ₹${savings.toLocaleString()}
+        </span>
+    `;
+}
+</script>
 
-    function paintChart2(m){
-      const c = document.getElementById('bar2');
-      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      const W = c.clientWidth, H = 320;
-      c.width = W * dpr; c.height = H * dpr; const ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
-
-      const vals = [m.annualBurn, m.annualGain, m.netAfterBurn];
-      const labels = ["Annual burn", "Annual gain", "Net after burn"];
-      const colors = [getComputedStyle(document.documentElement).getPropertyValue('--accent'), getComputedStyle(document.documentElement).getPropertyValue('--accent-2'), m.netAfterBurn>=0? 'rgba(158,242,122,1)' : 'rgba(255,122,122,1)'];
-
-      const pad = 24, bw = 120, gap = 40;
-      const maxV = Math.max(...vals.map(v=>Math.abs(v))) * 1.2;
-      const chartW = (bw * vals.length) + (gap * (vals.length - 1));
-      const ox = (W - chartW) / 2; const oy = H - 48;
-
-      ctx.strokeStyle = 'rgba(255,255,255,.12)';
-      ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, oy+.5); ctx.lineTo(W-pad, oy+.5); ctx.stroke();
-
-      ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.font = '12px Inter, system-ui, sans-serif';
-      for(let i=0;i<=4;i++){
-        const yv = (maxV/4)*i; const y = oy - (yv/maxV)*(H-96);
-        ctx.fillText('₹ '+fmt(Math.round(yv)), 8, y+4);
-        ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.beginPath(); ctx.moveTo(pad, y+.5); ctx.lineTo(W-pad, y+.5); ctx.stroke();
-      }
-
-      vals.forEach((v, i)=>{
-        const x = ox + i*(bw+gap);
-        const h = (Math.abs(v)/maxV)*(H-96);
-        ctx.fillStyle = colors[i];
-        const y = oy - h; const r = 10;
-        roundRect(ctx, x, y, bw, h, r); ctx.fill();
-        ctx.fillStyle = '#e8eeff'; ctx.textAlign = 'center';
-        ctx.font = '12px Inter, system-ui, sans-serif';
-        ctx.fillText(labels[i], x + bw/2, oy + 18);
-        ctx.font = 'bold 14px Inter, system-ui, sans-serif';
-        ctx.fillText('₹ '+fmt(Math.round(v)), x + bw/2, y - 10);
-      })
-    }
-
-    function roundRect(ctx, x, y, w, h, r){
-      ctx.beginPath();
-      ctx.moveTo(x+r, y);
-      ctx.arcTo(x+w, y, x+w, y+h, r);
-      ctx.arcTo(x+w, y+h, x, y+h, r);
-      ctx.arcTo(x, y+h, x, y, r);
-      ctx.arcTo(x, y, x+w, y, r);
-      ctx.closePath();
-    }
-
-    function paintPie(m){
-      const c = document.getElementById('pie');
-      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      const W = c.clientWidth, H = 320;
-      c.width = W * dpr; c.height = H * dpr;
-      const ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
-
-      // Base model split (no rent in Chennai month)
-      const parts = [m.rent*3, m.food*3, m.flightCost, m.emi];
-      const colors = [
-        getComputedStyle(document.documentElement).getPropertyValue('--accent'),
-        getComputedStyle(document.documentElement).getPropertyValue('--accent-2'),
-        '#ffa3a3', '#c7c7ff'
-      ];
-      const total = parts.reduce((a,b)=>a+b,0);
-      let angle = -Math.PI/2;
-
-      parts.forEach((v,i)=>{
-        const slice = (v/total)*Math.PI*2;
-        ctx.beginPath();
-        ctx.moveTo(W/2,H/2);
-        ctx.fillStyle = colors[i];
-        ctx.arc(W/2,H/2,120,angle,angle+slice);
-        ctx.lineTo(W/2,H/2);
-        ctx.fill();
-        angle += slice;
-      });
-    }
-
-    function render(){
-      const m = compute();
-      paintKPIs(m); paintTable(m); paintChart(m); paintChart2(m); paintPie(m);
-    }
-
-    addEventListener('resize', render);
-    document.getElementById('recalc').addEventListener('click', render);
-    ['currNet','newNet','flight','rent','food','emi','keep'].forEach(id=>document.getElementById(id).addEventListener('input', render));
-
-    // --- Dev quick checks (simple test cases) ---
-    function runTests(){
-      const exp = {curr:150000, next:270000, flight:8000, rent:16000, food:10000, emi:0};
-      // seed inputs
-      document.getElementById('currNet').value = exp.curr;
-      document.getElementById('newNet').value  = exp.next;
-      document.getElementById('flight').value  = exp.flight;
-      document.getElementById('rent').value    = exp.rent;
-      document.getElementById('food').value    = exp.food;
-      document.getElementById('emi').value     = exp.emi;
-      document.getElementById('keep').checked  = true; // independent of base model
-      const m = compute();
-
-      // Expected numbers with defaults (base model)
-      const cycleTotalExpected = (exp.rent+exp.food)*3 + (exp.flight*2) + exp.emi; // = 94,000
-      const monthlyAvgExpected = cycleTotalExpected/4; // = 23,500
-      const annualBurnExpected  = cycleTotalExpected*3; // = 282,000
-      const monthlyDeltaExpected = (exp.next-exp.curr); // = 120,000
-      const annualGainExpected  = monthlyDeltaExpected*12; // = 1,440,000
-      const netAfterBurnExpected = annualGainExpected - annualBurnExpected; // = 1,158,000
-
-      console.assert(m.cycleTotal === cycleTotalExpected, 'cycleTotal mismatch');
-      console.assert(m.monthlyAvg === monthlyAvgExpected, 'monthlyAvg mismatch');
-      console.assert(m.annualBurn === annualBurnExpected, 'annualBurn mismatch');
-      console.assert(m.monthlyDelta === monthlyDeltaExpected, 'monthlyDelta mismatch');
-      console.assert(m.annualGain === annualGainExpected, 'annualGain mismatch');
-      console.assert(m.netAfterBurn === netAfterBurnExpected, 'netAfterBur
+</body>
+</html>
