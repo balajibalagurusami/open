@@ -1,34 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>CTC & Take-Home Calculator</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>CTC & Take-Home Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header class="topbar">
+    <h1>CTC & Take-Home Calculator</h1>
+    <button id="themeToggle" type="button">🌙 Dark</button>
+  </header>
 
-<h2>CTC & Take-Home Calculator (India New Regime 2025)</h2>
+  <main>
+    <section class="card">
+      <h2>Income Details</h2>
 
-<h3>Income Details</h3>
-<label>Current CTC (Annual)</label>
-<input id="ctc" type="number">
+      <label>Current CTC (Annual - ₹)</label>
+      <input id="ctc" type="number" step="1000" value="2400000">
 
-<label>Expected Hike (%)</label>
-<input id="hike" type="number" value="0">
+      <label>Expected Hike (%)</label>
+      <input id="hike" type="number" step="1" value="30">
+    </section>
 
-<h3>Monthly Expenses</h3>
-<label>Rent</label><input id="rent" type="number">
-<label>Food</label><input id="food" type="number">
-<label>Air Travel</label><input id="air" type="number">
-<label>Daily Commute</label><input id="commute" type="number">
-<label>Electricity</label><input id="electricity" type="number">
-<label>Internet</label><input id="internet" type="number">
-<label>EMI</label><input id="emi" type="number">
+    <section class="card">
+      <h2>Monthly Expenses</h2>
 
-<button onclick="calc()">Calculate</button>
+      <label>Rent (₹)</label>
+      <input id="rent" type="number" value="16000">
 
-<div class="box" id="result"></div>
+      <label>Food (₹)</label>
+      <input id="food" type="number" value="10000">
 
-<script src="calc.js"></script>
+      <label>Air Travel (₹)</label>
+      <input id="air" type="number" value="600">
+
+      <label>Daily Commute (₹)</label>
+      <input id="commute" type="number" value="2000">
+
+      <label>Electricity (₹)</label>
+      <input id="electricity" type="number" value="2000">
+
+      <label>Internet (₹)</label>
+      <input id="internet" type="number" value="0">
+
+      <label>EMI (₹)</label>
+      <input id="emi" type="number" value="0">
+    </section>
+
+    <button id="calcBtn" type="button">Calculate</button>
+
+    <section class="card" id="result"></section>
+
+    <section class="card">
+      <h2>Monthly Snapshot</h2>
+      <canvas id="chart" width="400" height="220"></canvas>
+      <p class="note">Bars show Take-home vs Expenses vs Savings.</p>
+    </section>
+  </main>
+
+  <script src="calc.js" defer></script>
 </body>
 </html>
